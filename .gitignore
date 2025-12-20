@@ -1,0 +1,5 @@
+node_modules
+.env
+banco_dados.json
+temp_audio.ogg
+temp_audio.mp3
