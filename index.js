@@ -1,8 +1,8 @@
 require('dotenv').config();
 console.log("--- TESTE DE CARGA DO AMBIENTE ---");
 console.log("SUPABASE_URL:", process.env.SUPABASE_URL);
-console.log("SUPABASE_KEY:", process.env.SUPABASE_KEY ? "Carregada (oculta)" : "NÃO DEFINIDA");
-console.log("OPENAI_KEY:", process.env.OPENAI_API_KEY ? "Carregada (oculta)" : "NÃO DEFINIDA");
+console.log("SUPABASE_ANON_KEY:", process.env.SUPABASE_ANON_KEY ? "Carregada (oculta)" : "NÃO DEFINIDA");
+console.log("OPENAI_API_KEY:", process.env.OPENAI_API_KEY ? "Carregada (oculta)" : "NÃO DEFINIDA");
 console.log("----------------------------------");
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
@@ -24,11 +24,11 @@ if (!fs.existsSync(ffmpegPath)) {
 }
 
 // Inicialização do Cliente Supabase
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
     console.error('❌ ERRO: Faltam as credenciais do SUPABASE no arquivo .env');
     process.exit(1);
 }
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 // Configuração da OpenAI
 const openai = new OpenAI({
