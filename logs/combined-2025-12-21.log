@@ -81,3 +81,24 @@
 {"duration":1198,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:38:55","tokens":1875}
 {"count":1,"duration":574,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:38:56","tokens":8}
 {"body":"Gastei R$ 3,00 com pão de forma","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:39:05","type":"chat"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 14:42:06"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:42:09"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:42:15"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:42:15"}
+{"body":"Gastei R$ 3,00 com pão de forma","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:42:38","type":"chat"}
+{"duration":509,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 14:42:39","tokens":14}
+{"duration":1019,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:42:41","tokens":1908}
+{"count":1,"duration":469,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:42:42","tokens":8}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:42:51","type":"ptt"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 14:42:53","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":1404,"level":"info","message":"Audio Transcribed","model":"whisper-1","service":"finance-bot","timestamp":"2025-12-21 14:42:54"}
+{"duration":720,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 14:42:55","tokens":12}
+{"duration":1161,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:42:57","tokens":1862}
+{"count":1,"duration":656,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:42:57","tokens":6}
+{"body":"Conta internet.pdf","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:43:12","type":"document"}
+{"filename":"Conta internet.pdf","level":"info","message":"Queueing Job: PROCESS_PDF","service":"finance-bot","timestamp":"2025-12-21 14:43:13","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":1144,"level":"info","message":"PDF Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:43:14","tokens":936}
+{"count":1,"duration":511,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:43:14","tokens":15}
+{"body":"Extrato-01-10-2025-a-19-12-2025-OFX.ofx","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:43:37","type":"document"}
+{"filename":"Extrato-01-10-2025-a-19-12-2025-OFX.ofx","level":"info","message":"Queueing Job: PROCESS_OFX","service":"finance-bot","timestamp":"2025-12-21 14:43:38","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"count":245,"duration":2801,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:43:40","tokens":5622}
