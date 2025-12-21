@@ -6,7 +6,7 @@ const FormatterService = {
      * Formata mensagem de sucesso para registro de transação
      */
     formatSuccessMessage(gasto) {
-        const valor = this.formatCurrency(gasto.valor);
+        const valor = this.formatCurrency(gasto.valor, gasto.moeda);
         const titulo = gasto.tipo === 'receita' ? '✅ Entrada Registrada!' : '✅ Gasto Registrado!';
         const dataDisplay = formatToDisplay(gasto.data);
 
@@ -17,10 +17,15 @@ const FormatterService = {
     },
 
     /**
-     * Formata valor monetário (BRL)
+     * Formata valor monetário (Multi-moeda)
      */
-    formatCurrency(value) {
-        return Math.abs(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    formatCurrency(value, currency = 'BRL') {
+        try {
+            return Math.abs(value).toLocaleString('pt-BR', { style: 'currency', currency: currency });
+        } catch (e) {
+            // Fallback para BRL se a moeda for inválida
+            return Math.abs(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
     },
 
     /**

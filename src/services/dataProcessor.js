@@ -3,6 +3,8 @@ const { generateBatchEmbeddings } = require('../services/openaiService');
 const { formatToISO } = require('../utils/dateUtility');
 const FormatterService = require('../services/formatterService');
 
+const currencyService = require('./currencyService');
+
 // --- DATA PROCESSOR (Batch Optimization) ---
 // replyCallback(text) -> Promise<void>
 async function processExtractedData(content, userId, replyCallback) {
@@ -37,7 +39,7 @@ async function processExtractedData(content, userId, replyCallback) {
 
     if (!transacoes.length) return replyCallback("🤔 Não encontrei transações nem valor total nesta fatura.");
 
-    // 1. Prepare Data & Descriptions
+    // 1. Prepare Data & Descriptions with Currency Conversion
     const validItems = [];
     const textsForEmbedding = [];
 
@@ -45,11 +47,26 @@ async function processExtractedData(content, userId, replyCallback) {
         if (!g.valor) continue;
         g.descricao = g.descricao || "Item";
         g.categoria = g.categoria || "Outros";
-        // Ensure dataFormatted is ISO for DB consistency if needed, 
-        // essentially g.data needs to be valid.
-        // formatToISO handles parsing.
 
-        validItems.push(g);
+        // Lógica de Conversão
+        const taxa = await currencyService.getExchangeRate(g.moeda);
+        let valorFinal = g.valor;
+
+        // Se a taxa for diferente de 1, converte
+        if (taxa !== 1.0) {
+            valorFinal = g.valor * taxa;
+        }
+
+        const itemProcessed = {
+            ...g,
+            valor: valorFinal, // Valor em BRL
+            valor_original: g.valor, // Valor original
+            moeda_original: g.moeda || 'BRL',
+            taxa_cambio: taxa,
+            data: g.data // Mantém data original para formatação posterior
+        };
+
+        validItems.push(itemProcessed);
         textsForEmbedding.push(`${g.descricao} - ${g.categoria}`);
     }
 
@@ -61,7 +78,10 @@ async function processExtractedData(content, userId, replyCallback) {
     // 3. Prepare Batch Insert payload
     const payload = validItems.map((g, idx) => ({
         user_id: userId,
-        valor: g.valor,
+        valor: g.valor, // Convertido em BRL
+        valor_original: g.valor_original,
+        moeda_original: g.moeda_original,
+        taxa_cambio: g.taxa_cambio,
         categoria: g.categoria,
         descricao: g.descricao,
         data: formatToISO(g.data), // Use new ISO formatter
@@ -76,7 +96,21 @@ async function processExtractedData(content, userId, replyCallback) {
     let response = "";
     if (savedTxs && savedTxs.length > 0) {
         savedTxs.forEach((tx, idx) => {
-            response += FormatterService.formatSuccessMessage(payload[idx]);
+            // Nota: Se houve conversão, podemos mostrar no sucesso
+            // Mas o formatterService atual usa o que está no payload.
+            // O payload tem `valor` (BRL) e `moeda_original`.
+            // Vamos ajustar o objeto passado ao formatter para ele saber lidar se quiser, 
+            // mas o user pediu só para exibir BRL no dashboard.
+            // Para a msg do whatsapp, seria legal mostrar BRL.
+            // O formatterService.formatSuccessMessage usa `gasto.valor` e `gasto.moeda`.
+            // O payload não tem mais `moeda` explicitamente como antes da migração, 
+            // agora é `moeda_original`.
+            // Vou hackear o objeto de visualização para o formatter entender BRL.
+            const displayObj = {
+                ...payload[idx],
+                moeda: 'BRL' // Exibe em BRL pois já foi convertido
+            };
+            response += FormatterService.formatSuccessMessage(displayObj);
         });
         await replyCallback(response.trim());
     } else {

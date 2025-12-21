@@ -79,6 +79,18 @@ const mediaWorker = new Worker('media-processing', async (job) => {
             case 'PROCESS_XLSX':
                 result = await xlsxStrategy.execute(mockMessage);
                 break;
+            case 'RETRY_PDF_PASSWORD':
+                // Special flow: directly retry with password using strategy helper
+                // job.data contains: { mediaData, password, ... }
+                const retryResult = await pdfStrategy.retryWithPassword(mediaData, job.data.password);
+
+                if (retryResult.success) {
+                    // Normalize result to match other strategies
+                    result = { type: 'data_extraction', content: retryResult.data };
+                } else {
+                    result = { type: 'system_error', content: `Senha inválida ou erro: ${retryResult.error}` };
+                }
+                break;
             default:
                 throw new Error(`Unknown job type: ${type}`);
         }

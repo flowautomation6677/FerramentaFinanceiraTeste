@@ -5,11 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dashboard": "cd web-dashboard && npm run dev",
+    "dev": "concurrently \"npm start\" \"npm run dashboard\"",
     "test": "jest"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@supabase/supabase-js": "^2.89.0",
+    "axios": "^1.13.2",
     "bullmq": "^5.66.2",
     "csv-parse": "^6.1.0",
     "date-fns": "^4.1.0",
@@ -33,6 +36,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "jest": "^30.2.0"
   }
 }

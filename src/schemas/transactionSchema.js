@@ -5,6 +5,7 @@ const TransactionItemSchema = z.object({
     descricao: z.string().describe("Nome ou descrição do item/transação"),
     valor: z.number().describe("Valor monetário da transação"),
     categoria: z.string().default("Outros").describe("Categoria do gasto (Ex: Alimentação, Transporte)"),
+    moeda: z.string().length(3).default("BRL").describe("Código ISO 4217 da moeda (Ex: BRL, USD, EUR)"),
     tipo: z.enum(['receita', 'despesa']).default('despesa').describe("Tipo da transação"),
     data: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data deve estar no formato YYYY-MM-DD").optional().describe("Data da transação YYYY-MM-DD")
 });

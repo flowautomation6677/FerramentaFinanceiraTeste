@@ -102,3 +102,44 @@
 {"body":"Extrato-01-10-2025-a-19-12-2025-OFX.ofx","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:43:37","type":"document"}
 {"filename":"Extrato-01-10-2025-a-19-12-2025-OFX.ofx","level":"info","message":"Queueing Job: PROCESS_OFX","service":"finance-bot","timestamp":"2025-12-21 14:43:38","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
 {"count":245,"duration":2801,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:43:40","tokens":5622}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 15:04:08"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 15:04:11"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 15:04:20"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 15:04:20"}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:04:34","type":"ptt"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 15:04:36","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":3090,"level":"info","message":"Audio Transcribed","model":"whisper-1","service":"finance-bot","timestamp":"2025-12-21 15:04:39"}
+{"duration":551,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:04:40","tokens":16}
+{"duration":1458,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:04:42","tokens":1865}
+{"count":1,"duration":459,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 15:04:43","tokens":7}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 15:06:41"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 15:06:44"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 15:06:53"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 15:06:53"}
+{"body":"gastei 15 euros aqui com bombom na alemanha","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:09:54","type":"chat"}
+{"duration":592,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:09:55","tokens":14}
+{"duration":1340,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:09:57","tokens":1860}
+{"count":1,"duration":735,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 15:09:58","tokens":10}
+{"body":"gastei 10 euros com batata","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:10:22","type":"chat"}
+{"duration":959,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:10:23","tokens":9}
+{"duration":1535,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:10:25","tokens":1887}
+{"count":1,"duration":556,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 15:10:25","tokens":6}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 15:19:22"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 15:19:26"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 15:19:38"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 15:19:38"}
+{"body":"gastei 10 euros com batata na inglaterra","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:20:04","type":"chat"}
+{"duration":426,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:20:04","tokens":13}
+{"duration":1764,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:20:07","tokens":1858}
+{"level":"info","message":"Taxa de câmbio obtida: EUR -> BRL = 6.443","service":"finance-bot","timestamp":"2025-12-21 15:20:07"}
+{"count":1,"duration":819,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 15:20:08","tokens":10}
+{"body":"Fatura inter.pdf","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:21:39","type":"document"}
+{"filename":"Fatura inter.pdf","level":"info","message":"Queueing Job: PROCESS_PDF","service":"finance-bot","timestamp":"2025-12-21 15:21:40","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"body":"168466","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:21:47","type":"chat"}
+{"level":"info","message":"Queueing PDF Password Retry","service":"finance-bot","timestamp":"2025-12-21 15:21:48","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 15:23:35"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 15:23:39"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 15:23:45"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 15:23:45"}
+{"body":"Fatura inter.pdf","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:24:02","type":"document"}
+{"level":"info","message":"Queueing PDF Password Retry","service":"finance-bot","timestamp":"2025-12-21 15:24:03","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}

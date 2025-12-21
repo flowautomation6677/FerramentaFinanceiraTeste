@@ -46,7 +46,7 @@ async function handleMessage(message) {
         // 0. State Check: Waiting for PDF Password?
         const pendingPdfBase64 = await sessionService.getPdfState(user.id);
 
-        if (pendingPdfBase64) {
+        if (pendingPdfBase64 && !message.hasMedia) {
             // Assume text is password
             const password = message.body.trim();
 
