@@ -1,82 +1,77 @@
 require('dotenv').config();
 const OpenAI = require('openai');
 const fs = require('fs');
+const logger = require('./loggerService'); // Adjusted path context
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
 /**
- * Gera embedding para busca semântica
- * @param {string} text 
- * @returns {Promise<number[]|null>}
- */
-
-
-/**
  * Gera embedding para busca semântica (Single)
  */
 async function generateEmbedding(text) {
+    const start = Date.now();
     try {
         const response = await openai.embeddings.create({
             model: "text-embedding-3-small",
             input: text,
             encoding_format: "float",
         });
+        const duration = Date.now() - start;
+        logger.info('Embedding Generated', { duration, model: "text-embedding-3-small", tokens: response.usage.total_tokens });
         return response.data[0].embedding;
     } catch (e) {
-        console.error("Erro ao gerar embedding:", e);
+        logger.error("Erro ao gerar embedding", { error: e });
         return null;
     }
 }
 
 /**
  * Gera embeddings em lote (Batch)
- * @param {string[]} texts 
- * @returns {Promise<Array<number[]|null>>}
  */
 async function generateBatchEmbeddings(texts) {
+    const start = Date.now();
     try {
-        // Remove empty strings to avoid API errors, but keep index sync? 
-        // Better: Caller ensures valid strings.
         const response = await openai.embeddings.create({
             model: "text-embedding-3-small",
             input: texts,
             encoding_format: "float",
         });
-        // Map back to guarantee order
+        const duration = Date.now() - start;
+        logger.info('Batch Embedding Generated', { duration, count: texts.length, tokens: response.usage.total_tokens });
         return response.data.map(d => d.embedding);
     } catch (e) {
-        console.error("Erro ao gerar embedding batch:", e);
-        return texts.map(() => null); // Fallback to avoid crash
+        logger.error("Erro ao gerar embedding batch", { error: e });
+        return texts.map(() => null);
     }
 }
 
 /**
  * Transcreve áudio usando Whisper
- * @param {string} filePath 
- * @returns {Promise<string>}
  */
 async function transcribeAudio(filePath) {
+    const start = Date.now();
     try {
         const transcription = await openai.audio.transcriptions.create({
             file: fs.createReadStream(filePath),
             model: "whisper-1",
             language: "pt"
         });
+        const duration = Date.now() - start;
+        logger.info('Audio Transcribed', { duration, model: "whisper-1" });
         return transcription.text;
     } catch (err) {
-        console.error("Erro na transcrição Whisper:", err);
+        logger.error("Erro na transcrição Whisper", { error: err });
         throw err;
     }
 }
 
 /**
  * Analisa imagem para extração de dados
- * @param {string} base64Image 
- * @returns {Promise<string>} JSON string
  */
 async function analyzeImage(base64Image, mimetype) {
+    const start = Date.now();
     const systemPromptVision = `Atue como um extrator de dados financeiros de recibos, comprovantes e anotações.
     Analise a imagem e extraia TODAS as transações (Receitas e Despesas).
     
@@ -97,26 +92,31 @@ async function analyzeImage(base64Image, mimetype) {
     }
     Se nada for visível: { "transacoes": [] }`;
 
-    const completion = await openai.chat.completions.create({
-        messages: [
-            { role: "system", content: systemPromptVision },
-            { role: "user", content: [{ type: "image_url", image_url: { url: `data:${mimetype};base64,${base64Image}` } }] }
-        ],
-        model: "gpt-4o",
-        max_tokens: 1000,
-        response_format: { type: "json_object" }
-    });
+    try {
+        const completion = await openai.chat.completions.create({
+            messages: [
+                { role: "system", content: systemPromptVision },
+                { role: "user", content: [{ type: "image_url", image_url: { url: `data:${mimetype};base64,${base64Image}` } }] }
+            ],
+            model: "gpt-4o",
+            max_tokens: 1000,
+            response_format: { type: "json_object" }
+        });
 
-    return completion.choices[0].message.content;
+        const duration = Date.now() - start;
+        logger.info('Image Analyzed', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
+        return completion.choices[0].message.content;
+    } catch (e) {
+        logger.error("Erro na análise de imagem", { error: e });
+        throw e;
+    }
 }
 
 /**
  * Analisa texto extraído de PDF para buscar transações
- * @param {string} pdfText 
- * @returns {Promise<string>} JSON string
- * Analisa texto de PDF/Imagem para extrair transações e totais.
  */
 async function analyzePdfText(text) {
+    const start = Date.now();
     const prompt = `
     Analise o texto deste documento financeiro (Fatura de Cartão, Extrato Bancário OFX/CSV ou Planilha) e extraia os dados.
     
@@ -156,21 +156,22 @@ async function analyzePdfText(text) {
             temperature: 0
         });
 
+        const duration = Date.now() - start;
+        logger.info('PDF Analyzed', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
+
         const result = JSON.parse(completion.choices[0].message.content);
-        return result; // Retorna { total_fatura, vencimento, transacoes }
+        return result;
     } catch (error) {
-        console.error("Erro na análise de PDF (OpenAI):", error);
+        logger.error("Erro na análise de PDF", { error: error });
         return { transacoes: [], error: "Falha na IA" };
     }
 }
 
 /**
  * Chat Completions para Texto/Tools
- * @param {Array} messages 
- * @param {Array} tools 
- * @returns {Promise<object>} OpenAI Response Object
  */
 async function chatCompletion(messages, tools = []) {
+    const start = Date.now();
     const params = {
         model: "gpt-4o",
         messages: messages,
@@ -181,7 +182,15 @@ async function chatCompletion(messages, tools = []) {
         params.tool_choice = "auto";
     }
 
-    return await openai.chat.completions.create(params);
+    try {
+        const completion = await openai.chat.completions.create(params);
+        const duration = Date.now() - start;
+        logger.info('Chat Completion', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
+        return completion;
+    } catch (e) {
+        logger.error("Erro no Chat Completion", { error: e });
+        throw e;
+    }
 }
 
 module.exports = {

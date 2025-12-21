@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "C:\\Users\\luiza\\OneDrive\\Documentos\\Antigravity\\FerramentaFinanceiraTeste\\logs\\.0286c2f54b969d366a6f1789661f95bdf8fec455-audit.json",
+    "files": [
+        {
+            "date": 1766336618238,
+            "name": "C:\\Users\\luiza\\OneDrive\\Documentos\\Antigravity\\FerramentaFinanceiraTeste\\logs\\combined-2025-12-21.log",
+            "hash": "ea7ee81746bb128c77d048181a935e6a85e700799f2935c936c3c6b85422028b"
+        }
+    ],
+    "hashType": "sha256"
+}

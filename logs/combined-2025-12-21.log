@@ -1,0 +1,12 @@
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:03:41"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:03:47"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:03:47"}
+{"duration":504,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 14:04:25","tokens":11}
+{"duration":1409,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:04:27","tokens":1867}
+{"count":1,"duration":778,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:04:28","tokens":6}
+{"filename":"Conta internet.pdf","level":"info","message":"Queueing Job: PROCESS_PDF","service":"finance-bot","timestamp":"2025-12-21 14:07:03","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":958,"level":"info","message":"PDF Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:07:04","tokens":936}
+{"count":1,"duration":1178,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:07:05","tokens":15}
+{"filename":"PicPay_Fatura_122025.pdf","level":"info","message":"Queueing Job: PROCESS_PDF","service":"finance-bot","timestamp":"2025-12-21 14:07:25","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":2107,"level":"info","message":"PDF Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:07:27","tokens":2226}
+{"count":5,"duration":1087,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:07:28","tokens":70}

@@ -16,11 +16,10 @@ const transactionRepo = require('../repositories/TransactionRepository');
 // FORÇANDO via Variável de Ambiente
 process.env.FFMPEG_PATH = ffmpegPath;
 
-// --- MAIN CONTROLLER ---
 const sessionService = require('../services/sessionService');
 const queueService = require('../services/queueService');
 const { processExtractedData } = require('../services/dataProcessor');
-
+const logger = require('../services/loggerService');
 
 
 async function handleMessage(message) {
@@ -45,6 +44,7 @@ async function handleMessage(message) {
 
             // Offload Password Retry to Worker
             await message.reply("⏳ Verificando senha e processando...");
+            logger.info('Queueing PDF Password Retry', { userId: user.id });
 
             await queueService.addJob('RETRY_PDF_PASSWORD', {
                 chatId: message.from,
@@ -54,14 +54,6 @@ async function handleMessage(message) {
                 filename: 'locked.pdf'
             });
 
-            // We optimistically clear state or wait? 
-            // Better to let the worker clear it on success, 
-            // OR we clear it now and if it fails user has to re-upload.
-            // The instructions said "pendingPdf... should be serialized/deserialized in Redis". 
-            // If we remove it here, and worker fails, user has to re-send file.
-            // Let's keep it in Redis. If worker succeeds, worker should clear it?
-            // Shared state modification from worker ok.
-
             return;
         }
 
@@ -69,6 +61,7 @@ async function handleMessage(message) {
 
             const media = await message.downloadMedia();
             if (!media) {
+                logger.warn('Failed to download media', { userId: user.id, messageId: message.id._serialized });
                 return message.reply("❌ Não consegui baixar a mídia. Tente novamente.");
             }
 
@@ -96,6 +89,7 @@ async function handleMessage(message) {
 
             if (jobType) {
                 await message.reply("⏳ Recebi seu arquivo! Estou processando e te aviso em instantes...");
+                logger.info(`Queueing Job: ${jobType}`, { userId: user.id, filename });
                 await queueService.addJob(jobType, {
                     chatId: message.from,
                     userId: user.id,
@@ -143,7 +137,7 @@ async function handleMessage(message) {
                     try {
                         await processExtractedData(jsonStr, user.id, reply);
                     } catch (e) {
-                        console.error("JSON Processing Fail:", e);
+                        logger.error("JSON Processing Fail", { error: e, input: text, userId: user.id });
                         await message.reply(text);
                     }
                 } else {
@@ -165,7 +159,7 @@ async function handleMessage(message) {
         }
 
     } catch (err) {
-        console.error("❌ Controller Error:", err);
+        logger.error("❌ Controller Error", { error: err, stack: err.stack });
     }
 }
 
