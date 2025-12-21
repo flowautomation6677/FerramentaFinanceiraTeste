@@ -1,32 +1,7 @@
 const transactionRepo = require('../repositories/TransactionRepository');
 const { generateBatchEmbeddings } = require('../services/openaiService');
-
-// --- HELPERS ---
-
-function parseDate(dateStr) {
-    if (!dateStr) return new Date().toISOString().split('T')[0];
-    // Se já for YYYY-MM-DD
-    if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) return dateStr.split('T')[0];
-    // Se for DD/MM/YYYY
-    const brMatch = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-    return brMatch ? `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}` : new Date().toISOString().split('T')[0];
-}
-
-function formatDateDisplay(dateStr) {
-    const iso = parseDate(dateStr);
-    const [y, m, d] = iso.split('-');
-    return `${d}/${m}/${y}`;
-}
-
-function formatSuccessMessage(gasto, savedTxId) {
-    const valor = Math.abs(gasto.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-    const titulo = gasto.tipo === 'receita' ? '✅ Entrada Registrada!' : '✅ Gasto Registrado!';
-
-    return `${titulo}\n\n` +
-        `🪙 ${gasto.categoria} (${gasto.descricao})\n` +
-        `💰 R$ ${valor}\n` +
-        `🗓️ ${formatDateDisplay(gasto.data)}\n\n`;
-}
+const { formatToISO } = require('../utils/dateUtility');
+const FormatterService = require('../services/formatterService');
 
 // --- DATA PROCESSOR (Batch Optimization) ---
 // replyCallback(text) -> Promise<void>
@@ -64,7 +39,9 @@ async function processExtractedData(content, userId, replyCallback) {
         if (!g.valor) continue;
         g.descricao = g.descricao || "Item";
         g.categoria = g.categoria || "Outros";
-        g.dataFormatted = parseDate(g.data);
+        // Ensure dataFormatted is ISO for DB consistency if needed, 
+        // essentially g.data needs to be valid.
+        // formatToISO handles parsing.
 
         validItems.push(g);
         textsForEmbedding.push(`${g.descricao} - ${g.categoria}`);
@@ -81,7 +58,7 @@ async function processExtractedData(content, userId, replyCallback) {
         valor: g.valor,
         categoria: g.categoria,
         descricao: g.descricao,
-        data: g.dataFormatted || parseDate(g.data), // Ensure ISO YYYY-MM-DD for DB
+        data: formatToISO(g.data), // Use new ISO formatter
         tipo: g.tipo || 'despesa',
         embedding: embeddings[idx] // Match index
     }));
@@ -93,11 +70,11 @@ async function processExtractedData(content, userId, replyCallback) {
     let response = "";
     if (savedTxs && savedTxs.length > 0) {
         savedTxs.forEach((tx, idx) => {
-            response += formatSuccessMessage(payload[idx], tx.id);
+            response += FormatterService.formatSuccessMessage(payload[idx]);
         });
         await replyCallback(response.trim());
     } else {
-        await replyCallback("❌ Erro ao salvar dados.");
+        await replyCallback(FormatterService.formatErrorMessage("Erro ao salvar dados."));
     }
 }
 

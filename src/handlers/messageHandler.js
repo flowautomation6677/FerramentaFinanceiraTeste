@@ -16,45 +16,11 @@ const transactionRepo = require('../repositories/TransactionRepository');
 // FORÇANDO via Variável de Ambiente
 process.env.FFMPEG_PATH = ffmpegPath;
 
-// --- HELPERS ---
-
-function parseDate(dateStr) {
-    if (!dateStr) return new Date().toISOString().split('T')[0];
-    // Se já for YYYY-MM-DD
-    if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) return dateStr.split('T')[0];
-    // Se for DD/MM/YYYY
-    const brMatch = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-    return brMatch ? `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}` : new Date().toISOString().split('T')[0];
-}
-
-function formatDateDisplay(dateStr) {
-    const iso = parseDate(dateStr);
-    const [y, m, d] = iso.split('-');
-    return `${d}/${m}/${y}`;
-}
-
-// --- FORMATTER ---
-// --- FORMATTER ---
-function formatSuccessMessage(gasto, savedTxId) {
-    const valor = Math.abs(gasto.valor).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-    // User requested "✅ Gasto Registrado!", but we should distinguish Revenue? 
-    // "✅ Gasto Registrado!" seems to be a template. Let's respect it but maybe adapt for Revenue if 'tipo' is 'receita'.
-    // User said: "Template String: ... ✅ Gasto Registrado! ..."
-    // I will use "Transação Registrada" or keep "Gasto" ? 
-    // Let's stick to the requested "✅ Gasto Registrado!" for expenses, and maybe "✅ Entrada Registrada!" for income.
-
-    const titulo = gasto.tipo === 'receita' ? '✅ Entrada Registrada!' : '✅ Gasto Registrado!';
-
-    return `${titulo}\n\n` +
-        `🪙 ${gasto.categoria} (${gasto.descricao})\n` +
-        `💰 R$ ${valor}\n` +
-        `🗓️ ${formatDateDisplay(gasto.data)}\n\n`;
-}
-
 // --- MAIN CONTROLLER ---
 const sessionService = require('../services/sessionService');
 const queueService = require('../services/queueService');
 const { processExtractedData } = require('../services/dataProcessor');
+
 
 
 async function handleMessage(message) {
