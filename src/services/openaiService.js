@@ -118,34 +118,34 @@ async function analyzeImage(base64Image, mimetype) {
  */
 async function analyzePdfText(text) {
     const prompt = `
-    Analise o texto desta fatura de cartão de crédito e extraia os dados.
+    Analise o texto deste documento financeiro (Fatura de Cartão, Extrato Bancário OFX/CSV ou Planilha) e extraia os dados.
     
-    1. Identifique o VALOR TOTAL DA FATURA ("Total a pagar", "Valor total", "Total desta fatura") e o VENCIMENTO.
-    2. Extraia TODAS as transações novas, incluindo:
-       - Compras (Lojas, serviços)
-       - Juros, Multas, IOF, Encargos (Classifique como "Taxas/Juros")
-       - Estornos (Valores negativos)
-       - Parcelas de compras antigas (se listadas explicitamente com valor nesta fatura)
+    1. Identifique o VALOR TOTAL (se for fatura) e o VENCIMENTO.
+    2. Extraia TODAS as transações, incluindo:
+       - Compras / Saídas
+       - Recebimentos / Entradas (Pix, Salário, Depósitos)
+       - Taxas, Juros, Multas (Classifique como "Taxas/Juros")
+       - Estornos
        
-    IGNORE: "Saldo Anterior", "Pagamento Efetuado", "Pagamento Mínimo", "Total Parcelado" (apenas o total geral).
+    IGNORE: "Saldo Anterior", "Saldo Final" (apenas transações ou total a pagar).
 
     Retorne JSON estrito:
     {
-        "total_fatura": 1234.56,
-        "vencimento": "YYYY-MM-DD",
+        "total_fatura": 1234.56 (ou null se for extrato conta corrente),
+        "vencimento": "YYYY-MM-DD" (ou null),
         "transacoes": [
             {
-                "descricao": "Nome do estabelecimento ou taxa",
+                "descricao": "Nome do estabelecimento ou transação",
                 "valor": 10.50,
-                "categoria": "Categoria sugerida (Ex: Alimentação, Transporte, Taxas/Juros)",
-                "tipo": "despesa" (ou "receita" se for crédito/estorno),
-                "data": "YYYY-MM-DD" (se não encontrar ano, assuma próximo vencimento ou ano corrente)
+                "categoria": "Categoria sugerida (Ex: Alimentação, Transporte, Taxas/Juros, Salário)",
+                "tipo": "despesa" | "receita",
+                "data": "YYYY-MM-DD"
             }
         ]
     }
     
-    Texto da Fatura:
-    ${text.substring(0, 15000)} // Limit to avoid token overflow
+    Texto do Documento:
+    ${text.substring(0, 15000)}
     `;
 
     try {

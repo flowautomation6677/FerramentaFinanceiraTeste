@@ -1,0 +1,33 @@
+STARTING TESTS...
+
+--- Teste: Correção de Valor ---
+Input: "Era 20 reais, quer dizer, 30."
+AI Data JSON found.
+RESULT: PASS
+
+--- Teste: Correção de Local ---
+Input: "Fui no Burger King, não, foi no McDonald's."
+AI Content only.
+RESULT: FAIL
+Got: {
+  "type": "ai_response",
+  "content": "Quanto custou o que você comprou no McDonald's? Quer registrar?"
+}
+
+--- Teste: Cancelamento Total ---
+Input: "Gastei 50... ah, esquece, não vou anotar nada hoje."
+AI Content only.
+RESULT: PASS
+
+--- Teste: Correção Dupla ---
+Input: "10 no Uber, não, 15, não, 20 porque dei gorjeta."
+AI Data JSON found.
+RESULT: PASS
+
+--- Teste: Falsa Correção ---
+Input: "Gastei 50 no almoço e não me arrependi."
+AI Data JSON found.
+RESULT: PASS
+
+-------------------
+FINAL SUMMARY: SOME TESTS FAILED

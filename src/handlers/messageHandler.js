@@ -5,7 +5,10 @@ const supabase = require('../services/supabaseClient');
 const { chatCompletion, analyzeImage, transcribeAudio, generateEmbedding, generateBatchEmbeddings } = require('../services/openaiService');
 const imageStrategy = require('../strategies/ImageStrategy');
 const audioStrategy = require('../strategies/AudioStrategy');
-const pdfStrategy = require('../strategies/PdfStrategy'); // NEW
+const pdfStrategy = require('../strategies/PdfStrategy');
+const ofxStrategy = require('../strategies/OfxStrategy'); // NEW
+const csvStrategy = require('../strategies/CsvStrategy'); // NEW
+const xlsxStrategy = require('../strategies/XlsxStrategy'); // NEW
 const textStrategy = require('../strategies/TextStrategy');
 const userRepo = require('../repositories/UserRepository');
 const transactionRepo = require('../repositories/TransactionRepository');
@@ -16,10 +19,18 @@ process.env.FFMPEG_PATH = ffmpegPath;
 // --- HELPERS ---
 
 function parseDate(dateStr) {
-    if (!dateStr) return new Date().toISOString();
-    if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) return dateStr;
+    if (!dateStr) return new Date().toISOString().split('T')[0];
+    // Se já for YYYY-MM-DD
+    if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) return dateStr.split('T')[0];
+    // Se for DD/MM/YYYY
     const brMatch = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
-    return brMatch ? `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}` : new Date().toISOString();
+    return brMatch ? `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}` : new Date().toISOString().split('T')[0];
+}
+
+function formatDateDisplay(dateStr) {
+    const iso = parseDate(dateStr);
+    const [y, m, d] = iso.split('-');
+    return `${d}/${m}/${y}`;
 }
 
 // --- FORMATTER ---
@@ -37,7 +48,7 @@ function formatSuccessMessage(gasto, savedTxId) {
     return `${titulo}\n\n` +
         `🪙 ${gasto.categoria} (${gasto.descricao})\n` +
         `💰 R$ ${valor}\n` +
-        `🗓️ ${gasto.dataFormatted || parseDate(gasto.data)}\n\n`; // savedTxId removed as not in User Template
+        `🗓️ ${formatDateDisplay(gasto.data)}\n\n`;
 }
 
 // --- DATA PROCESSOR (Batch Optimization) ---
@@ -92,7 +103,7 @@ async function processExtractedData(content, message, userId) {
         valor: g.valor,
         categoria: g.categoria,
         descricao: g.descricao,
-        data: g.dataFormatted,
+        data: g.dataFormatted || parseDate(g.data), // Ensure ISO YYYY-MM-DD for DB
         tipo: g.tipo || 'despesa',
         embedding: embeddings[idx] // Match index
     }));
@@ -169,7 +180,22 @@ async function handleMessage(message) {
                 result = await audioStrategy.execute(message);
             } else if (message.type === 'document' && (message._data.mimetype === 'application/pdf' || message.body.endsWith('.pdf'))) {
                 // PDF Strategy
+                await message.reply("⏳ Processando PDF...");
                 result = await pdfStrategy.execute(message);
+            } else if (message.type === 'document') {
+                const mime = message._data.mimetype || '';
+                const filename = message.body ? message.body.toLowerCase() : '';
+
+                if (filename.endsWith('.ofx') || mime.includes('ofx')) {
+                    await message.reply("⏳ Processando OFX... Aguarde.");
+                    result = await ofxStrategy.execute(message);
+                } else if (filename.endsWith('.csv') || mime.includes('csv')) {
+                    await message.reply("⏳ Baixando e analisando CSV... Isso pode levar alguns segundos.");
+                    result = await csvStrategy.execute(message);
+                } else if (filename.endsWith('.xlsx') || filename.endsWith('.xls') || mime.includes('excel') || mime.includes('spreadsheet')) {
+                    await message.reply("⏳ Convertendo e analisando Excel... Aguarde.");
+                    result = await xlsxStrategy.execute(message);
+                }
             }
         } else {
             result = { type: 'text_command', content: message.body };
