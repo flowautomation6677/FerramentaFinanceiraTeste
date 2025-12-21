@@ -95,6 +95,12 @@ class TextStrategy {
 
         const messages = [{ role: "system", content: systemPrompt }, ...memory, { role: "user", content: text }];
         const completion = await openaiService.chatCompletion(messages, tools);
+
+        // Circuit Breaker Fallback Handling
+        if (completion.error && completion.type === 'fallback') {
+            return { type: 'ai_response', content: completion.message || "⚠️ Serviço temporariamente indisponível." };
+        }
+
         const responseMsg = completion.choices[0].message;
 
         // 4. Tool Handling

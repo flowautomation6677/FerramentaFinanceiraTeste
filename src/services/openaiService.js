@@ -7,70 +7,47 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-/**
- * Gera embedding para busca semântica (Single)
- */
-async function generateEmbedding(text) {
+const { createBreaker } = require('./circuitBreakerService');
+
+// --- IMPLEMENTAÇÃO PURA (Internal) ---
+
+async function _generateEmbedding(text) {
     const start = Date.now();
-    try {
-        const response = await openai.embeddings.create({
-            model: "text-embedding-3-small",
-            input: text,
-            encoding_format: "float",
-        });
-        const duration = Date.now() - start;
-        logger.info('Embedding Generated', { duration, model: "text-embedding-3-small", tokens: response.usage.total_tokens });
-        return response.data[0].embedding;
-    } catch (e) {
-        logger.error("Erro ao gerar embedding", { error: e });
-        return null;
-    }
+    const response = await openai.embeddings.create({
+        model: "text-embedding-3-small",
+        input: text,
+        encoding_format: "float",
+    });
+    const duration = Date.now() - start;
+    logger.info('Embedding Generated', { duration, model: "text-embedding-3-small", tokens: response.usage.total_tokens });
+    return response.data[0].embedding;
 }
 
-/**
- * Gera embeddings em lote (Batch)
- */
-async function generateBatchEmbeddings(texts) {
+async function _generateBatchEmbeddings(texts) {
     const start = Date.now();
-    try {
-        const response = await openai.embeddings.create({
-            model: "text-embedding-3-small",
-            input: texts,
-            encoding_format: "float",
-        });
-        const duration = Date.now() - start;
-        logger.info('Batch Embedding Generated', { duration, count: texts.length, tokens: response.usage.total_tokens });
-        return response.data.map(d => d.embedding);
-    } catch (e) {
-        logger.error("Erro ao gerar embedding batch", { error: e });
-        return texts.map(() => null);
-    }
+    const response = await openai.embeddings.create({
+        model: "text-embedding-3-small",
+        input: texts,
+        encoding_format: "float",
+    });
+    const duration = Date.now() - start;
+    logger.info('Batch Embedding Generated', { duration, count: texts.length, tokens: response.usage.total_tokens });
+    return response.data.map(d => d.embedding);
 }
 
-/**
- * Transcreve áudio usando Whisper
- */
-async function transcribeAudio(filePath) {
+async function _transcribeAudio(filePath) {
     const start = Date.now();
-    try {
-        const transcription = await openai.audio.transcriptions.create({
-            file: fs.createReadStream(filePath),
-            model: "whisper-1",
-            language: "pt"
-        });
-        const duration = Date.now() - start;
-        logger.info('Audio Transcribed', { duration, model: "whisper-1" });
-        return transcription.text;
-    } catch (err) {
-        logger.error("Erro na transcrição Whisper", { error: err });
-        throw err;
-    }
+    const transcription = await openai.audio.transcriptions.create({
+        file: fs.createReadStream(filePath),
+        model: "whisper-1",
+        language: "pt"
+    });
+    const duration = Date.now() - start;
+    logger.info('Audio Transcribed', { duration, model: "whisper-1" });
+    return transcription.text;
 }
 
-/**
- * Analisa imagem para extração de dados
- */
-async function analyzeImage(base64Image, mimetype) {
+async function _analyzeImage(base64Image, mimetype) {
     const start = Date.now();
     const systemPromptVision = `Atue como um extrator de dados financeiros de recibos, comprovantes e anotações.
     Analise a imagem e extraia TODAS as transações (Receitas e Despesas).
@@ -92,30 +69,22 @@ async function analyzeImage(base64Image, mimetype) {
     }
     Se nada for visível: { "transacoes": [] }`;
 
-    try {
-        const completion = await openai.chat.completions.create({
-            messages: [
-                { role: "system", content: systemPromptVision },
-                { role: "user", content: [{ type: "image_url", image_url: { url: `data:${mimetype};base64,${base64Image}` } }] }
-            ],
-            model: "gpt-4o",
-            max_tokens: 1000,
-            response_format: { type: "json_object" }
-        });
+    const completion = await openai.chat.completions.create({
+        messages: [
+            { role: "system", content: systemPromptVision },
+            { role: "user", content: [{ type: "image_url", image_url: { url: `data:${mimetype};base64,${base64Image}` } }] }
+        ],
+        model: "gpt-4o",
+        max_tokens: 1000,
+        response_format: { type: "json_object" }
+    });
 
-        const duration = Date.now() - start;
-        logger.info('Image Analyzed', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
-        return completion.choices[0].message.content;
-    } catch (e) {
-        logger.error("Erro na análise de imagem", { error: e });
-        throw e;
-    }
+    const duration = Date.now() - start;
+    logger.info('Image Analyzed', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
+    return completion.choices[0].message.content;
 }
 
-/**
- * Analisa texto extraído de PDF para buscar transações
- */
-async function analyzePdfText(text) {
+async function _analyzePdfText(text) {
     const start = Date.now();
     const prompt = `
     Analise o texto deste documento financeiro (Fatura de Cartão, Extrato Bancário OFX/CSV ou Planilha) e extraia os dados.
@@ -148,29 +117,20 @@ async function analyzePdfText(text) {
     ${text.substring(0, 15000)}
     `;
 
-    try {
-        const completion = await openai.chat.completions.create({
-            messages: [{ role: "system", content: prompt }],
-            model: "gpt-4o",
-            response_format: { type: "json_object" },
-            temperature: 0
-        });
+    const completion = await openai.chat.completions.create({
+        messages: [{ role: "system", content: prompt }],
+        model: "gpt-4o",
+        response_format: { type: "json_object" },
+        temperature: 0
+    });
 
-        const duration = Date.now() - start;
-        logger.info('PDF Analyzed', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
+    const duration = Date.now() - start;
+    logger.info('PDF Analyzed', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
 
-        const result = JSON.parse(completion.choices[0].message.content);
-        return result;
-    } catch (error) {
-        logger.error("Erro na análise de PDF", { error: error });
-        return { transacoes: [], error: "Falha na IA" };
-    }
+    return JSON.parse(completion.choices[0].message.content);
 }
 
-/**
- * Chat Completions para Texto/Tools
- */
-async function chatCompletion(messages, tools = []) {
+async function _chatCompletion(messages, tools = []) {
     const start = Date.now();
     const params = {
         model: "gpt-4o",
@@ -182,23 +142,29 @@ async function chatCompletion(messages, tools = []) {
         params.tool_choice = "auto";
     }
 
-    try {
-        const completion = await openai.chat.completions.create(params);
-        const duration = Date.now() - start;
-        logger.info('Chat Completion', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
-        return completion;
-    } catch (e) {
-        logger.error("Erro no Chat Completion", { error: e });
-        throw e;
-    }
+    const completion = await openai.chat.completions.create(params);
+    const duration = Date.now() - start;
+    logger.info('Chat Completion', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
+    return completion;
 }
+
+// --- CIRCUIT BREAKERS ---
+
+const embeddingBreaker = createBreaker(_generateEmbedding, 'OpenAI-Embedding');
+const batchEmbeddingBreaker = createBreaker(_generateBatchEmbeddings, 'OpenAI-BatchEmbedding');
+const transcribeBreaker = createBreaker(_transcribeAudio, 'OpenAI-Whisper');
+const visionBreaker = createBreaker(_analyzeImage, 'OpenAI-Vision');
+const pdfBreaker = createBreaker(_analyzePdfText, 'OpenAI-PDF');
+const chatBreaker = createBreaker(_chatCompletion, 'OpenAI-Chat');
+
+// --- EXPORTS (Wrapped) ---
 
 module.exports = {
     openai,
-    generateEmbedding,
-    generateBatchEmbeddings,
-    transcribeAudio,
-    analyzeImage,
-    analyzePdfText,
-    chatCompletion
+    generateEmbedding: (text) => embeddingBreaker.fire(text),
+    generateBatchEmbeddings: (texts) => batchEmbeddingBreaker.fire(texts),
+    transcribeAudio: (filePath) => transcribeBreaker.fire(filePath),
+    analyzeImage: (base64, mime) => visionBreaker.fire(base64, mime),
+    analyzePdfText: (text) => pdfBreaker.fire(text),
+    chatCompletion: (msgs, tools) => chatBreaker.fire(msgs, tools)
 };
