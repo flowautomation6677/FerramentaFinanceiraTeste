@@ -1,6 +1,22 @@
+require('dotenv').config();
+const logger = require('./src/services/loggerService');
+
+// 0. Validação de Ambiente (Failsafe)
+const REQUIRED_ENV = [
+    'OPENAI_API_KEY',
+    'SUPABASE_URL',
+    'SUPABASE_ANON_KEY'
+];
+
+const missingEnv = REQUIRED_ENV.filter(key => !process.env[key]);
+
+if (missingEnv.length > 0) {
+    logger.error(`❌ ERRO FATAL: Variáveis de ambiente obrigatórias ausentes: ${missingEnv.join(', ')}`);
+    process.exit(1);
+}
+
 const client = require('./src/services/whatsappClient');
 const { handleMessage } = require('./src/handlers/messageHandler');
-const logger = require('./src/services/loggerService');
 require('./src/workers/mediaWorker'); // Initialize Worker
 
 

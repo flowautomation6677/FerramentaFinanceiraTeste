@@ -1,26 +1,61 @@
-const supabase = require('../services/supabaseClient');
+const { publicClient } = require('../services/supabaseClient');
+const logger = require('../services/loggerService');
 
 class UserRepository {
     async findByPhone(phone) {
-        const { data, error } = await supabase.from('perfis').select('*').eq('whatsapp_number', phone).single();
-        if (error && error.code !== 'PGRST116') console.error("Repo Error (User.find):", error);
-        return data;
+        // Retorna POJO (Plain Old JavaScript Object) ou null
+        const { data, error } = await publicClient
+            .from('perfis')
+            .select('*')
+            .eq('whatsapp_number', phone)
+            .single();
+
+        if (error && error.code !== 'PGRST116') {
+            logger.error("Repo Error (User.find)", { error });
+            return null;
+        }
+        return data || null;
     }
 
     async create(phone) {
-        const { data, error } = await supabase.from('perfis').insert([{ whatsapp_number: phone }]).select().single();
-        if (error) console.error("Repo Error (User.create):", error);
-        return data;
+        const { data, error } = await publicClient
+            .from('perfis')
+            .insert([{ whatsapp_number: phone }])
+            .select()
+            .single();
+
+        if (error) {
+            logger.error("Repo Error (User.create)", { error });
+            throw new Error("Falha ao criar usuário");
+        }
+        return data; // POJO
     }
 
     async getFinancialGoal(userId) {
-        const { data } = await supabase.from('perfis').select('financial_goal').eq('id', userId).single();
-        return data?.financial_goal;
+        const { data, error } = await publicClient
+            .from('perfis')
+            .select('financial_goal')
+            .eq('id', userId)
+            .single();
+
+        if (error) {
+            logger.error("Repo Error (User.getGoal)", { error });
+            return null;
+        }
+        return data?.financial_goal || null;
     }
 
     async setFinancialGoal(userId, goal) {
-        const { error } = await supabase.from('perfis').update({ financial_goal: goal }).eq('id', userId);
-        return !error;
+        const { error } = await publicClient
+            .from('perfis')
+            .update({ financial_goal: goal })
+            .eq('id', userId);
+
+        if (error) {
+            logger.error("Repo Error (User.setGoal)", { error });
+            return false;
+        }
+        return true;
     }
 }
 

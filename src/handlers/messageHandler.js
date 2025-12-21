@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { AIResponseSchema } = require('../schemas/transactionSchema');
 const ffmpegPath = require('ffmpeg-static');
 const supabase = require('../services/supabaseClient');
 const { chatCompletion, analyzeImage, transcribeAudio, generateEmbedding, generateBatchEmbeddings } = require('../services/openaiService');
@@ -25,6 +26,13 @@ const logger = require('../services/loggerService');
 async function handleMessage(message) {
     try {
         if (message.from === 'status@broadcast') return;
+
+        logger.info("📩 Message Received", {
+            from: message.from,
+            type: message.type,
+            hasMedia: message.hasMedia,
+            body: message.body?.substring(0, 50)
+        });
 
         const user = await userRepo.findByPhone(message.from) || await userRepo.create(message.from);
         if (!user) return message.reply('❌ Erro de Perfil.');
@@ -57,7 +65,8 @@ async function handleMessage(message) {
             return;
         }
 
-        if (message.hasMedia) {
+        // Safeguard: Ignore 'chat' type even if hasMedia is true (prevents bugs)
+        if (message.hasMedia && message.type !== 'chat') {
 
             const media = await message.downloadMedia();
             if (!media) {
@@ -114,14 +123,10 @@ async function handleMessage(message) {
             const reply = async (text) => await message.reply(text);
             await processExtractedData(result.content, user.id, reply);
 
-            const { AIResponseSchema } = require('../schemas/transactionSchema'); // Import at top
-
-            // ... (existing imports)
-
-            // ...
-
         } else if (result.type === 'text_command') {
+            logger.debug(`[Handler] Executing Text Strategy for: "${result.content}"`);
             const response = await textStrategy.execute(result.content, message, user, userContext);
+            logger.debug(`[Handler] Strategy Response Type: ${response.type}`);
 
             if (response.type === 'ai_response' || response.type === 'tool_response') {
                 const text = typeof response.content === 'string' ? response.content : JSON.stringify(response.content);
@@ -187,5 +192,4 @@ async function handleMessage(message) {
         logger.error("❌ Controller Error", { error: err, stack: err.stack });
     }
 }
-
 module.exports = { handleMessage };

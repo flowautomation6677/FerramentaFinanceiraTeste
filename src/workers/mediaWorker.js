@@ -1,5 +1,6 @@
 const { Worker } = require('bullmq');
 const client = require('../services/whatsappClient');
+const sessionService = require('../services/sessionService'); // Needed for context
 const { processExtractedData } = require('../services/dataProcessor');
 const imageStrategy = require('../strategies/ImageStrategy');
 const audioStrategy = require('../strategies/AudioStrategy');
@@ -7,6 +8,7 @@ const pdfStrategy = require('../strategies/PdfStrategy');
 const ofxStrategy = require('../strategies/OfxStrategy');
 const csvStrategy = require('../strategies/CsvStrategy');
 const xlsxStrategy = require('../strategies/XlsxStrategy');
+const textStrategy = require('../strategies/TextStrategy'); // Needed for processing audio text
 
 const connection = {
     url: process.env.REDIS_URL || 'redis://localhost:6379'
@@ -36,6 +38,7 @@ const mediaWorker = new Worker('media-processing', async (job) => {
         // Most strategies in this codebase accept the `message` object and extract data from it.
         // We will mock the message object with necessary fields and methods.
         const mockMessage = {
+            id: { id: job.id, _serialized: job.id }, // Mock ID for filename generation
             from: chatId,
             body: body || '',
             type: type === 'PROCESS_AUDIO' ? 'ptt' : 'document', // Simplified
@@ -85,6 +88,52 @@ const mediaWorker = new Worker('media-processing', async (job) => {
 
         if (result.type === 'data_extraction') {
             await processExtractedData(result.content, userId, reply);
+
+        } else if (result.type === 'text_command') {
+            // Audio/Other converted to text -> Process as AI conversation
+            const userContext = await sessionService.getContext(userId);
+            // Mock User object strictly with ID (Strategies shouldn't depend on full User object from DB if possible, or we fetch it)
+            const mockUser = { id: userId };
+
+            const response = await textStrategy.execute(result.content, mockMessage, mockUser, userContext);
+
+            if (response.type === 'ai_response' || response.type === 'tool_response') {
+                const text = typeof response.content === 'string' ? response.content : JSON.stringify(response.content);
+                // Removed unconditional reply(text)
+
+                // --- Zod Validation ---
+                const { AIResponseSchema } = require('../schemas/transactionSchema');
+                let jsonStr = text;
+                const firstBrace = text.indexOf('{');
+                const lastBrace = text.lastIndexOf('}');
+                if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+                    jsonStr = text.substring(firstBrace, lastBrace + 1);
+                }
+
+                let processedSuccessfully = false;
+                try {
+                    const parsedRaw = JSON.parse(jsonStr);
+                    const validation = AIResponseSchema.safeParse(parsedRaw);
+                    if (validation.success) {
+                        // Valid JSON: Process silently (processExtractedData handles the user reply)
+                        await processExtractedData(validation.data, userId, reply);
+                        processedSuccessfully = true;
+                    }
+                } catch (e) { /* Not a JSON, ignore */ }
+
+                // If NOT processed as a transaction (e.g. normal chat), then reply with the text
+                if (!processedSuccessfully) {
+                    await reply(text);
+                }
+                // -----------------------------------------------------------------------------------------
+
+                // Update Context
+                userContext.push({ role: "user", content: result.content });
+                userContext.push({ role: "assistant", content: text });
+                if (userContext.length > 10) userContext.splice(0, userContext.length - 10);
+                await sessionService.setContext(userId, userContext, 86400);
+            }
+
         } else if (result.type === 'system_error') {
             await reply(`❌ ${result.content}`);
         } else if (result.type === 'pdf_password_request') {
@@ -99,9 +148,6 @@ const mediaWorker = new Worker('media-processing', async (job) => {
                 ? result.fileBuffer.toString('base64')
                 : result.fileBuffer;
 
-            // We need to import sessionService here to save state?
-            // Yes, let's require it dynamically or at top if needed.
-            const sessionService = require('../services/sessionService');
             await sessionService.setPdfState(userId, base64Data, 300);
 
             await reply("🔒 Este arquivo PDF é protegido por senha.\nDigite a senha para que eu possa ler:");

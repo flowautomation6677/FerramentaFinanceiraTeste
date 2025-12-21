@@ -10,3 +10,74 @@
 {"filename":"PicPay_Fatura_122025.pdf","level":"info","message":"Queueing Job: PROCESS_PDF","service":"finance-bot","timestamp":"2025-12-21 14:07:25","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
 {"duration":2107,"level":"info","message":"PDF Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:07:27","tokens":2226}
 {"count":5,"duration":1087,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:07:28","tokens":70}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 14:21:31"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:21:34"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:21:43"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:21:43"}
+{"filename":"Conta internet.pdf","level":"info","message":"Queueing Job: PROCESS_PDF","service":"finance-bot","timestamp":"2025-12-21 14:21:58","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":1275,"level":"info","message":"PDF Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:21:59","tokens":936}
+{"count":1,"duration":614,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:22:00","tokens":15}
+{"duration":813,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 14:22:08","tokens":12}
+{"duration":1351,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:22:10","tokens":1901}
+{"error":"AIResponseSchema is not defined","input":"{\n    \"raciocinio_logico\": \"O usuário informou novamente um gasto de 20 reais em pão ocorrido ontem. A data de ontem é 20/12/2025.\",\n    \"gastos\": [\n        {\n            \"descricao\": \"Pão\",\n            \"valor\": 20.00,\n            \"moeda\": \"BRL\",\n            \"categoria\": \"Alimentação\",\n            \"tipo\": \"despesa\",\n            \"data\": \"2025-12-20\"\n        }\n    ]\n}","level":"error","message":"JSON Syntax Error","service":"finance-bot","timestamp":"2025-12-21 14:22:10"}
+{"duration":809,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 14:22:16","tokens":11}
+{"duration":1054,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:22:17","tokens":1846}
+{"error":"AIResponseSchema is not defined","input":"{\n    \"raciocinio_logico\": \"O usuário indicou novamente uma compra de 2 reais em mangas ocorrida ontem. A data de ontem é 20/12/2025.\",\n    \"gastos\": [\n        {\n            \"descricao\": \"Manga\",\n            \"valor\": 2.00,\n            \"moeda\": \"BRL\",\n            \"categoria\": \"Alimentação\",\n            \"tipo\": \"despesa\",\n            \"data\": \"2025-12-20\"\n        }\n    ]\n}","level":"error","message":"JSON Syntax Error","service":"finance-bot","timestamp":"2025-12-21 14:22:17"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 14:24:51"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:24:54"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:25:00"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:25:00"}
+{"filename":"Conta internet.pdf","level":"info","message":"Queueing Job: PROCESS_PDF","service":"finance-bot","timestamp":"2025-12-21 14:25:34","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":1026,"level":"info","message":"PDF Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:25:36","tokens":936}
+{"count":1,"duration":415,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:25:36","tokens":15}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 14:26:04","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 14:28:25"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:28:29"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:28:35"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:28:35"}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:28:43","type":"ptt"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 14:28:44","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 14:29:40"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:29:43"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:29:49"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:29:49"}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:29:56","type":"ptt"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 14:29:56","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":1438,"level":"info","message":"Audio Transcribed","model":"whisper-1","service":"finance-bot","timestamp":"2025-12-21 14:29:59"}
+{"body":"Gastei 20 reais em pão ontem","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:30:24","type":"chat"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 14:32:35"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:32:38"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:32:47"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:32:47"}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:33:03","type":"ptt"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 14:33:04","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":1084,"level":"info","message":"Audio Transcribed","model":"whisper-1","service":"finance-bot","timestamp":"2025-12-21 14:33:06"}
+{"duration":637,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 14:33:06","tokens":13}
+{"duration":1528,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:33:09","tokens":1852}
+{"body":"Gastei dois reais com melancia ontem","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:33:26","type":"chat"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 14:35:45"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:35:48"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:35:56"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:35:56"}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:36:04","type":"ptt"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 14:36:05","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":874,"level":"info","message":"Audio Transcribed","model":"whisper-1","service":"finance-bot","timestamp":"2025-12-21 14:36:06"}
+{"duration":637,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 14:36:07","tokens":13}
+{"duration":1531,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:36:09","tokens":1870}
+{"count":1,"duration":544,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:36:10","tokens":6}
+{"body":"gastei 3 reais com batata doce","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:36:26","type":"chat"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 14:37:55"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 14:37:58"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 14:38:04"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 14:38:04"}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:38:26","type":"image"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_IMAGE","service":"finance-bot","timestamp":"2025-12-21 14:38:27","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":6285,"level":"info","message":"Image Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:38:33","tokens":1599}
+{"count":5,"duration":989,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:38:34","tokens":38}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:38:50","type":"ptt"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 14:38:51","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":2144,"level":"info","message":"Audio Transcribed","model":"whisper-1","service":"finance-bot","timestamp":"2025-12-21 14:38:53"}
+{"duration":660,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 14:38:54","tokens":15}
+{"duration":1198,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 14:38:55","tokens":1875}
+{"count":1,"duration":574,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 14:38:56","tokens":8}
+{"body":"Gastei R$ 3,00 com pão de forma","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 14:39:05","type":"chat"}

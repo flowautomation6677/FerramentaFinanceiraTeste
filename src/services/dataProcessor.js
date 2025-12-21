@@ -15,7 +15,13 @@ async function processExtractedData(content, userId, replyCallback) {
     if (data.pergunta) return replyCallback(data.pergunta);
     if (data.ignorar) return replyCallback(data.resposta || "🤖 Olá!");
 
-    const transacoes = data.transacoes || data.gastos || (data.valor ? [data] : []);
+    // Merge arrays to avoid shadowing (Zod might default transacoes to [])
+    const txA = data.transacoes || [];
+    const txB = data.gastos || [];
+    // Also support legacy single 'valor' object
+    const legacySingle = data.valor ? [data] : [];
+
+    const transacoes = [...txA, ...txB, ...legacySingle];
     const totalFatura = data.total_fatura;
 
     // Se não achou transações mas achou TOTAL DA FATURA, sugere registrar o pagamento da fatura
