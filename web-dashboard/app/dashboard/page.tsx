@@ -10,8 +10,11 @@ import WhatsAppLinker from '@/components/dashboard/WhatsAppLinker'
 export default async function DashboardPage({
     searchParams,
 }: {
-    searchParams: { [key: string]: string | string[] | undefined }
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
+    // Await params FIRST (Next.js 15 Requirement)
+    const params = await searchParams
+
     const supabase = await createClient()
 
     const {
@@ -30,8 +33,8 @@ export default async function DashboardPage({
 
     // Filtro de Data
     const today = new Date()
-    const customStart = searchParams?.startDate as string
-    const customEnd = searchParams?.endDate as string
+    const customStart = params?.startDate as string
+    const customEnd = params?.endDate as string
 
     // Cálculo do range do mês selecionado (Atual)
     let startDate: string
@@ -55,8 +58,8 @@ export default async function DashboardPage({
 
     } else {
         // Modo Mensal (Padrão)
-        const year = searchParams?.year ? parseInt(searchParams.year as string) : currentYear
-        const month = searchParams?.month ? parseInt(searchParams.month as string) : currentMonth
+        const year = params?.year ? parseInt(params.year as string) : currentYear
+        const month = params?.month ? parseInt(params.month as string) : currentMonth
 
         currentMonth = month
         currentYear = year
