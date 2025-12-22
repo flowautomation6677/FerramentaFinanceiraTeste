@@ -1,4 +1,5 @@
 🐷 Porquim 360 (V2 - Modular)
+
 O Porquim 360 é um bot financeiro inteligente para WhatsApp que utiliza IA para automatizar a gestão de finanças pessoais. Ele permite que os usuários registrem transações enviando mensagens de texto, áudios, imagens de comprovantes ou arquivos bancários, processando tudo automaticamente e exibindo os dados em um dashboard web moderno.
 
 🚀 Funcionalidades Principais
