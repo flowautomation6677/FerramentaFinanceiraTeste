@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Card, Title, Text, Tab, TabList, TabGroup, TabPanel, TabPanels, Grid, Metric, BarChart, DonutChart, AreaChart, Flex, Badge, Icon } from "@tremor/react";
 import { createBrowserClient } from "@supabase/ssr";
 import { Activity, DollarSign, Cpu, Search, Zap, TrendingUp, AlertTriangle, Users } from 'lucide-react';
+import ConfusionRadar from '@/components/admin/ConfusionRadar';
+import ABComparisonCard from '@/components/admin/ABComparisonCard';
 
 // --- IDV & UI CONSTANTS ---
 const IDV = {
@@ -105,26 +107,42 @@ export default function AdminDashboard() {
                 <TabPanels>
                     {/* --- THE LAB (AI EFFICIENCY) --- */}
                     <TabPanel>
-                        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div className="mt-6">
+                            {/* Hero Section of Lab */}
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                                <div className="lg:col-span-2">
+                                    <Card className="glass-card ring-0 h-full">
+                                        <Title className="text-white mb-6 flex items-center gap-2">
+                                            <Zap size={20} className="text-yellow-400" />
+                                            Batalha de Prompts: V1 vs V2
+                                        </Title>
+                                        <ABComparisonCard efficiencyData={efficiencyData} />
+                                    </Card>
+                                </div>
+                                <div className="lg:col-span-1">
+                                    <Card className="glass-card ring-0 h-full flex flex-col">
+                                        <Title className="text-white mb-2">Matriz de Confusão</Title>
+                                        <Text className="text-slate-400 text-xs mb-4">Onde a IA confunde as categorias?</Text>
+                                        <div className="flex-1 flex items-center justify-center">
+                                            <ConfusionRadar />
+                                        </div>
+                                    </Card>
+                                </div>
+                            </div>
+
+                            {/* Detailed Stats (Kept BarChart below effectively) */}
                             <Card className="glass-card ring-0">
-                                <Title className="text-white mb-4">Prompt Battle Royale</Title>
-                                <Text className="text-slate-400 mb-6">Comparison of error rates between Stable and Experimental prompts.</Text>
+                                <Title className="text-white mb-4">Histórico de Precisão</Title>
                                 <BarChart
-                                    className="h-72"
+                                    className="h-64"
                                     data={efficiencyData}
                                     index="prompt_version"
                                     categories={["error_rate_percent", "avg_confidence"]}
-                                    colors={["rose", "blue"]}
+                                    colors={["rose", "emerald"]}
                                     valueFormatter={(number) => `${number}%`}
                                     yAxisWidth={48}
                                     showAnimation={true}
                                 />
-                            </Card>
-                            <Card className="glass-card ring-0">
-                                <Title className="text-white mb-4">Confusion Matrix</Title>
-                                <div className="flex items-center justify-center h-64 border border-dashed border-slate-700 rounded-xl bg-slate-900/30">
-                                    <Text className="text-slate-500">Awaiting more correction data...</Text>
-                                </div>
                             </Card>
                         </div>
                     </TabPanel>
