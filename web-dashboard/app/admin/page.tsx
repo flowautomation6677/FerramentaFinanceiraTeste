@@ -1,21 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Title, Text, Tab, TabList, TabGroup, TabPanel, TabPanels, Grid, Metric, BarChart, DonutChart, AreaChart, Flex, Badge, Icon } from "@tremor/react";
+import { Title, Text, Tab, TabList, TabGroup, TabPanel, TabPanels, Grid, Card, Flex, Metric, Icon, Badge } from "@tremor/react";
 import { createBrowserClient } from "@supabase/ssr";
-import { Activity, DollarSign, Cpu, Search, Zap, TrendingUp, AlertTriangle, Users } from 'lucide-react';
-import ConfusionRadar from '@/components/admin/ConfusionRadar';
-import ABComparisonCard from '@/components/admin/ABComparisonCard';
+import { Activity, DollarSign, Cpu, Search, AlertTriangle } from 'lucide-react';
 
-// --- IDV & UI CONSTANTS ---
-const IDV = {
-    colors: {
-        primary: "indigo",
-        accent: "emerald",
-        alert: "rose",
-        neutral: "slate"
-    }
-};
+// Sections
+import TheLab from '@/components/admin/sections/TheLab';
+import TheCFO from '@/components/admin/sections/TheCFO';
+import TheSRE from '@/components/admin/sections/TheSRE';
 
 export default function AdminDashboard() {
     const supabase = createBrowserClient(
@@ -27,7 +20,7 @@ export default function AdminDashboard() {
 
     // KPIs (Simulated for "Expert" Feel if empty)
     const kpis = [
-        { title: "Precisão da IA", metric: "94.2%", icon: Zap, color: "indigo" },
+        { title: "Precisão da IA", metric: "94.2%", icon: Activity, color: "indigo" },
         { title: "Economia Gerada", metric: "R$ 1,250", icon: DollarSign, color: "emerald" },
         { title: "Transações Hoje", metric: "128", icon: Activity, color: "blue" },
     ];
@@ -54,8 +47,10 @@ export default function AdminDashboard() {
                     { date: '2023-10-01', est_cost_usd: 0.45 },
                     { date: '2023-10-02', est_cost_usd: 0.52 },
                     { date: '2023-10-03', est_cost_usd: 0.48 },
-                    { date: '2023-10-04', est_cost_usd: 1.20 }, // Spike
+                    { date: '2023-10-04', est_cost_usd: 1.20 },
                     { date: '2023-10-05', est_cost_usd: 0.80 },
+                    { date: '2023-10-06', est_cost_usd: 0.65 },
+                    { date: '2023-10-07', est_cost_usd: 0.90 },
                 ]);
             }
         }
@@ -77,7 +72,7 @@ export default function AdminDashboard() {
                     <Text className="text-slate-400">Real-time Intelligence & Financial Telemetry</Text>
                 </div>
                 <div className="flex gap-2">
-                    <Badge color="indigo" size="lg" icon={Cpu}>v2.0.1-RC</Badge>
+                    <Badge color="indigo" size="lg" icon={Cpu}>v2.1.0-ULTRA</Badge>
                 </div>
             </div>
 
@@ -105,80 +100,16 @@ export default function AdminDashboard() {
                 </TabList>
 
                 <TabPanels>
-                    {/* --- THE LAB (AI EFFICIENCY) --- */}
                     <TabPanel>
-                        <div className="mt-6">
-                            {/* Hero Section of Lab */}
-                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                                <div className="lg:col-span-2">
-                                    <Card className="glass-card ring-0 h-full">
-                                        <Title className="text-white mb-6 flex items-center gap-2">
-                                            <Zap size={20} className="text-yellow-400" />
-                                            Batalha de Prompts: V1 vs V2
-                                        </Title>
-                                        <ABComparisonCard efficiencyData={efficiencyData} />
-                                    </Card>
-                                </div>
-                                <div className="lg:col-span-1">
-                                    <Card className="glass-card ring-0 h-full flex flex-col">
-                                        <Title className="text-white mb-2">Matriz de Confusão</Title>
-                                        <Text className="text-slate-400 text-xs mb-4">Onde a IA confunde as categorias?</Text>
-                                        <div className="flex-1 flex items-center justify-center">
-                                            <ConfusionRadar />
-                                        </div>
-                                    </Card>
-                                </div>
-                            </div>
-
-                            {/* Detailed Stats (Kept BarChart below effectively) */}
-                            <Card className="glass-card ring-0">
-                                <Title className="text-white mb-4">Histórico de Precisão</Title>
-                                <BarChart
-                                    className="h-64"
-                                    data={efficiencyData}
-                                    index="prompt_version"
-                                    categories={["error_rate_percent", "avg_confidence"]}
-                                    colors={["rose", "emerald"]}
-                                    valueFormatter={(number) => `${number}%`}
-                                    yAxisWidth={48}
-                                    showAnimation={true}
-                                />
-                            </Card>
-                        </div>
+                        <TheLab efficiencyData={efficiencyData} />
                     </TabPanel>
 
-                    {/* --- THE CFO (FINANCIALS) --- */}
                     <TabPanel>
-                        <Card className="mt-6 glass-card ring-0">
-                            <Title className="text-white">Token Burn Rate (USD)</Title>
-                            <Text className="text-slate-400">Estimated cost accumulated over the last 30 days.</Text>
-                            <AreaChart
-                                className="h-80 mt-6"
-                                data={financeData}
-                                index="date"
-                                categories={["est_cost_usd"]}
-                                colors={["emerald"]}
-                                valueFormatter={(number) => `$${number.toFixed(4)}`}
-                                showAnimation={true}
-                                curveType="monotone"
-                            />
-                        </Card>
+                        <TheCFO financeData={financeData} />
                     </TabPanel>
 
-                    {/* --- THE SRE (OPS) --- */}
                     <TabPanel>
-                        <Grid numItems={1} numItemsSm={2} className="gap-6 mt-6">
-                            <Card className="glass-card ring-0 border-l-4 border-rose-500">
-                                <Title className="text-white">Queue Health</Title>
-                                <Metric className="text-rose-400">0 Critical</Metric>
-                                <Text className="text-slate-400 mt-2">All workers operational. 12ms avg latency.</Text>
-                            </Card>
-                            <Card className="glass-card ring-0 border-l-4 border-yellow-500">
-                                <Title className="text-white">API Quota</Title>
-                                <Metric className="text-yellow-400">42% Used</Metric>
-                                <Text className="text-slate-400 mt-2">OpenAI limit resets in 12 days.</Text>
-                            </Card>
-                        </Grid>
+                        <TheSRE />
                     </TabPanel>
                 </TabPanels>
             </TabGroup>
