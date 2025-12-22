@@ -1,4 +1,5 @@
 const ofx = require('node-ofx-parser');
+const securityService = require('../services/securityService');
 
 class OfxStrategy {
     async execute(message) {
@@ -44,7 +45,7 @@ class OfxStrategy {
                     const formattedDate = `${rawDate.substring(0, 4)}-${rawDate.substring(4, 6)}-${rawDate.substring(6, 8)}`;
 
                     return {
-                        descricao: tx.MEMO || "Transação OFX",
+                        descricao: securityService.redactPII(tx.MEMO || "Transação OFX"),
                         valor: Math.abs(valor), // Sistema usa positivo para valor, e 'tipo' para sinal
                         tipo: valor < 0 ? 'despesa' : 'receita',
                         categoria: 'Bancário', // Default, AI logic downstream can improve? Or keep generic.

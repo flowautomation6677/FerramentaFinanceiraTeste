@@ -5,7 +5,10 @@ const logger = require('./src/services/loggerService');
 const REQUIRED_ENV = [
     'OPENAI_API_KEY',
     'SUPABASE_URL',
-    'SUPABASE_ANON_KEY'
+    'SUPABASE_ANON_KEY',
+    // New Requirements for Evolution
+    // 'EVOLUTION_API_URL', 
+    // 'EVOLUTION_API_KEY'
 ];
 
 const missingEnv = REQUIRED_ENV.filter(key => !process.env[key]);

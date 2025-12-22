@@ -1,9 +1,12 @@
-const { publicClient } = require('../services/supabaseClient');
+const { publicClient, adminClient } = require('../services/supabaseClient');
 const logger = require('../services/loggerService');
+
+// Use Admin Client for Bot operations to bypass RLS (Bot is trusted)
+const supabase = adminClient || publicClient;
 
 class TransactionRepository {
     async create(transactionData) {
-        const { data, error } = await publicClient
+        const { data, error } = await supabase
             .from('transacoes')
             .insert([transactionData])
             .select()
@@ -19,7 +22,7 @@ class TransactionRepository {
     async createMany(transactionsData) {
         if (!transactionsData || transactionsData.length === 0) return [];
 
-        const { data, error } = await publicClient
+        const { data, error } = await supabase
             .from('transacoes')
             .insert(transactionsData)
             .select();
@@ -32,7 +35,7 @@ class TransactionRepository {
     }
 
     async findByUserAndDateRange(userId, startDate, endDate) {
-        const { data, error } = await publicClient
+        const { data, error } = await supabase
             .from('transacoes')
             .select('*')
             .eq('user_id', userId)
@@ -48,7 +51,7 @@ class TransactionRepository {
     }
 
     async findTopCategories(userId, startDate) {
-        const { data, error } = await publicClient
+        const { data, error } = await supabase
             .from('transacoes')
             .select('valor, categoria')
             .eq('user_id', userId)
@@ -63,7 +66,7 @@ class TransactionRepository {
     }
 
     async searchSimilar(embedding) {
-        const { data, error } = await publicClient.rpc('match_transacoes', {
+        const { data, error } = await supabase.rpc('match_transacoes', {
             query_embedding: embedding,
             match_threshold: 0.5,
             match_count: 5

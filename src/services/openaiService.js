@@ -84,8 +84,15 @@ async function _analyzeImage(base64Image, mimetype) {
     return completion.choices[0].message.content;
 }
 
+const securityService = require('./securityService');
+// ... existings imports ...
+
 async function _analyzePdfText(text) {
     const start = Date.now();
+
+    // 1. Pre-processing & Governance (PII Redaction + Cleaning)
+    const sanitizedText = securityService.cleanPdfText(text);
+
     const prompt = `
     Analise o texto deste documento financeiro (Fatura de Cartão, Extrato Bancário OFX/CSV ou Planilha) e extraia os dados.
     
@@ -114,7 +121,7 @@ async function _analyzePdfText(text) {
     }
     
     Texto do Documento:
-    ${text.substring(0, 15000)}
+    ${sanitizedText.substring(0, 15000)}
     `;
 
     const completion = await openai.chat.completions.create({
@@ -130,11 +137,20 @@ async function _analyzePdfText(text) {
     return JSON.parse(completion.choices[0].message.content);
 }
 
-async function _chatCompletion(messages, tools = []) {
+async function _chatCompletion(messages, tools = [], model = "gpt-4o") {
     const start = Date.now();
+
+    // 1. Governance: Redact PII from User Messages
+    const safeMessages = messages.map(m => {
+        if (m.role === 'user' && typeof m.content === 'string') {
+            return { ...m, content: securityService.redactPII(m.content) };
+        }
+        return m;
+    });
+
     const params = {
-        model: "gpt-4o",
-        messages: messages,
+        model: model,
+        messages: safeMessages,
     };
 
     if (tools.length > 0) {
@@ -144,7 +160,7 @@ async function _chatCompletion(messages, tools = []) {
 
     const completion = await openai.chat.completions.create(params);
     const duration = Date.now() - start;
-    logger.info('Chat Completion', { duration, model: "gpt-4o", tokens: completion.usage?.total_tokens });
+    logger.info('Chat Completion', { duration, model: model, tokens: completion.usage?.total_tokens });
     return completion;
 }
 
@@ -166,5 +182,5 @@ module.exports = {
     transcribeAudio: (filePath) => transcribeBreaker.fire(filePath),
     analyzeImage: (base64, mime) => visionBreaker.fire(base64, mime),
     analyzePdfText: (text) => pdfBreaker.fire(text),
-    chatCompletion: (msgs, tools) => chatBreaker.fire(msgs, tools)
+    chatCompletion: (msgs, tools, model) => chatBreaker.fire(msgs, tools, model)
 };

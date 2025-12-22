@@ -1,10 +1,13 @@
-const { publicClient } = require('../services/supabaseClient');
+const { publicClient, adminClient } = require('../services/supabaseClient');
 const logger = require('../services/loggerService');
+
+// Use Admin Client for Bot operations
+const supabase = adminClient || publicClient;
 
 class UserRepository {
     async findByPhone(phone) {
         // Retorna POJO (Plain Old JavaScript Object) ou null
-        const { data, error } = await publicClient
+        const { data, error } = await supabase
             .from('perfis')
             .select('*')
             .eq('whatsapp_number', phone)
@@ -18,7 +21,7 @@ class UserRepository {
     }
 
     async create(phone) {
-        const { data, error } = await publicClient
+        const { data, error } = await supabase
             .from('perfis')
             .insert([{ whatsapp_number: phone }])
             .select()
@@ -32,7 +35,7 @@ class UserRepository {
     }
 
     async getFinancialGoal(userId) {
-        const { data, error } = await publicClient
+        const { data, error } = await supabase
             .from('perfis')
             .select('financial_goal')
             .eq('id', userId)
@@ -46,7 +49,7 @@ class UserRepository {
     }
 
     async setFinancialGoal(userId, goal) {
-        const { error } = await publicClient
+        const { error } = await supabase
             .from('perfis')
             .update({ financial_goal: goal })
             .eq('id', userId);

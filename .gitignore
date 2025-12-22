@@ -34,3 +34,18 @@ Thumbs.db
 banco_dados.json
 temp_audio.ogg
 temp_audio.mp3
+qrcode.png
+
+# Logs and Debug
+logs/
+*.log
+*.txt
+debug_*.js
+manual_qr_*.js
+setup_evolution.js
+voice_response_*.ogg
+!README.md
+!requirements.txt
+!DEPLOY.md
+!ORACLE_SETUP.md
+!HOSTING_ALTERNATIVES.md

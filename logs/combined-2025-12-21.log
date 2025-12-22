@@ -143,3 +143,60 @@
 {"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 15:23:45"}
 {"body":"Fatura inter.pdf","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:24:02","type":"document"}
 {"level":"info","message":"Queueing PDF Password Retry","service":"finance-bot","timestamp":"2025-12-21 15:24:03","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 15:25:17"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 15:25:21"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 15:25:30"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 15:25:30"}
+{"body":"Fatura inter.pdf","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:25:46","type":"document"}
+{"filename":"Fatura inter.pdf","level":"info","message":"Queueing Job: PROCESS_PDF","service":"finance-bot","timestamp":"2025-12-21 15:25:47","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"body":"168466","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:25:53","type":"chat"}
+{"level":"info","message":"Queueing PDF Password Retry","service":"finance-bot","timestamp":"2025-12-21 15:25:53","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":8424,"level":"info","message":"PDF Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:26:02","tokens":6061}
+{"count":23,"duration":1188,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 15:26:03","tokens":354}
+{"body":"Converter 5 reais em dólares","from":"114740084908267@lid","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:37:52","type":"chat"}
+{"duration":824,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:37:54","tokens":9}
+{"duration":1598,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:37:56","tokens":1139}
+{"body":"Planejamento financeiro início","from":"114740084908267@lid","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:38:29","type":"chat"}
+{"duration":560,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:38:30","tokens":7}
+{"duration":790,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:38:31","tokens":1165}
+{"body":"Monte um","from":"114740084908267@lid","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:38:46","type":"chat"}
+{"duration":801,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:38:48","tokens":3}
+{"duration":1644,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:38:50","tokens":1212}
+{"body":"me passe uma receita de miojo ?","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:42:21","type":"chat"}
+{"duration":767,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:42:22","tokens":9}
+{"duration":1115,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:42:24","tokens":1773}
+{"body":"me passe quando o flamengo foi funadado","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:42:44","type":"chat"}
+{"duration":1036,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:42:45","tokens":10}
+{"duration":767,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:42:47","tokens":1695}
+{"body":"me fale sobre alexandre de moraes","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:43:08","type":"chat"}
+{"duration":1097,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:43:09","tokens":9}
+{"duration":820,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:43:11","tokens":1612}
+{"body":"/esquecer","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 15:43:18","type":"chat"}
+{"duration":470,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 15:43:19","tokens":3}
+{"duration":532,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 15:43:20","tokens":1504}
+{"level":"warn","message":"⚠️ AVISO: SUPABASE_SERVICE_ROLE_KEY não definida. Funcionalidades administrativas podem falhar.","service":"finance-bot","timestamp":"2025-12-21 16:30:55"}
+{"level":"info","message":"🚀 Iniciando Porquim 360 (V2 - Modular)...","service":"finance-bot","timestamp":"2025-12-21 16:30:59"}
+{"level":"info","message":"✅ Cliente WhatsApp conectado e pronto!","service":"finance-bot","timestamp":"2025-12-21 16:31:08"}
+{"level":"info","message":"✅ VERSÃO ATUALIZADA (RC-FINAL) CARREGADA COM SUCESSO!","service":"finance-bot","timestamp":"2025-12-21 16:31:08"}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 18:52:08","type":"image"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_IMAGE","service":"finance-bot","timestamp":"2025-12-21 18:52:12","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":3414,"level":"info","message":"Image Analyzed","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 18:52:15","tokens":1116}
+{"count":2,"duration":1133,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 18:52:16","tokens":16}
+{"body":"🚨 *ESTÁ NO AR!*\r\n\r\n🎧 Já saiu o novo episódio do ","from":"120363421917246483@g.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 19:19:57","type":"chat"}
+{"duration":1011,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 19:20:00","tokens":168}
+{"duration":1454,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 19:20:03","tokens":1375}
+{"body":"Quanto eu tenho na minha conta de saldo agora","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 22:11:37","type":"chat"}
+{"duration":1302,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 22:11:40","tokens":11}
+{"duration":1814,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 22:11:43","tokens":1545}
+{"body":"Quero meu saldo","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 22:12:00","type":"chat"}
+{"duration":951,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 22:12:01","tokens":4}
+{"duration":1698,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 22:12:03","tokens":1474}
+{"body":"","from":"5521990149660@c.us","hasMedia":true,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 22:12:54","type":"ptt"}
+{"filename":"unknown","level":"info","message":"Queueing Job: PROCESS_AUDIO","service":"finance-bot","timestamp":"2025-12-21 22:12:58","userId":"f7e866bb-3980-40e5-8b8a-54b8e70f380d"}
+{"duration":4182,"level":"info","message":"Audio Transcribed","model":"whisper-1","service":"finance-bot","timestamp":"2025-12-21 22:13:03"}
+{"duration":1437,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 22:13:04","tokens":11}
+{"duration":1959,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 22:13:07","tokens":1546}
+{"count":1,"duration":722,"level":"info","message":"Batch Embedding Generated","service":"finance-bot","timestamp":"2025-12-21 22:13:08","tokens":7}
+{"body":"https://youtu.be/tcrE_OIN2io?si=aNlYCFNTxZvsZoJT","from":"5521990149660@c.us","hasMedia":false,"level":"info","message":"📩 Message Received","service":"finance-bot","timestamp":"2025-12-21 22:37:48","type":"chat"}
+{"duration":1396,"level":"info","message":"Embedding Generated","model":"text-embedding-3-small","service":"finance-bot","timestamp":"2025-12-21 22:37:51","tokens":25}
+{"duration":952,"level":"info","message":"Chat Completion","model":"gpt-4o","service":"finance-bot","timestamp":"2025-12-21 22:37:52","tokens":1559}
