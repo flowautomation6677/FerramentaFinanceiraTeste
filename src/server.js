@@ -6,7 +6,7 @@ const EvolutionAdapter = require('./adapters/evolutionAdapter');
 const evolutionService = require('./services/evolutionService');
 
 const app = express();
-const PORT = process.env.SERVER_PORT || 3000;
+const PORT = process.env.PORT || process.env.SERVER_PORT || 3000;
 
 // Increase limit for media payloads
 app.use(bodyParser.json({ limit: '50mb' }));
