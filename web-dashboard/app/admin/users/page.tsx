@@ -50,6 +50,32 @@ export default function UsersPage() {
         setLoading(false);
     }
 
+    // Invite Logic
+    const [inviteEmail, setInviteEmail] = useState("");
+    const [isInviting, setIsInviting] = useState(false);
+
+    async function handleInvite() {
+        if (!inviteEmail) return alert("Digite um email");
+        setIsInviting(true);
+        try {
+            const res = await fetch('/api/invite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: inviteEmail })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert("Convite enviado com sucesso! 🎟️");
+                setInviteEmail("");
+            } else {
+                alert("Erro ao enviar: " + data.error);
+            }
+        } catch (e) {
+            alert("Erro desconhecido");
+        }
+        setIsInviting(false);
+    }
+
     // Filter Users
     const filteredUsers = users.filter((user) =>
         user.whatsapp_number?.toLowerCase().includes(search.toLowerCase()) ||
@@ -66,12 +92,30 @@ export default function UsersPage() {
                     </Title>
                     <Text className="text-slate-400">Visualize e gerencie todos os usuários cadastrados.</Text>
                 </div>
-                <div className="w-full sm:w-72">
+                <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
+                    {/* Invite Input Group */}
+                    <div className="flex gap-2">
+                        <TextInput
+                            placeholder="Email para convite..."
+                            value={inviteEmail}
+                            onValueChange={setInviteEmail}
+                            className="sm:w-64"
+                        />
+                        <button
+                            onClick={handleInvite}
+                            disabled={isInviting}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50 whitespace-nowrap"
+                        >
+                            {isInviting ? 'Enviando...' : 'Convidar'}
+                        </button>
+                    </div>
+
                     <TextInput
                         icon={Search}
                         placeholder="Buscar por WhatsApp..."
                         value={search}
                         onValueChange={setSearch}
+                        className="sm:w-64"
                     />
                 </div>
             </div>
@@ -106,7 +150,7 @@ export default function UsersPage() {
                                     <TableCell>
                                         <div className="flex flex-col">
                                             <Text className="text-white font-medium">{user.whatsapp_number}</Text>
-                                            <Text className="text-xs text-slate-500 font-mono">{user.id.substring(0, 8)}...</Text>
+                                            <Text className="text-xs text-slate-500 font-mono">{user.email || user.id.substring(0, 8)}</Text>
                                         </div>
                                     </TableCell>
                                     <TableCell>
@@ -121,7 +165,7 @@ export default function UsersPage() {
                                     </TableCell>
                                     <TableCell>
                                         <Text className="text-slate-400">
-                                            {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                                            {user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '-'}
                                         </Text>
                                     </TableCell>
                                     <TableCell>
@@ -151,7 +195,8 @@ export default function UsersPage() {
                     <Text className="text-slate-400">Novos (Mês)</Text>
                     <Title className="text-emerald-400">
                         {users.filter(u => {
-                            const d = new Date(user.created_at);
+                            if (!u.created_at) return false;
+                            const d = new Date(u.created_at);
                             const now = new Date();
                             return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
                         }).length}
