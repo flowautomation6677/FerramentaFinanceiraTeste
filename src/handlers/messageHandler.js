@@ -56,6 +56,19 @@ async function handleMessage(message) {
 
             // Let flow continue... (It will skip other commands and hit TextStrategy)
         }
+
+        // HANDSHAKE: Setup Message Trigger
+        if (message.body.includes("Olá! Quero começar a economizar com a Porquim IA")) {
+            // Check if user has setup goal
+            if (user.savings_goal && user.monthly_income) {
+                const available = user.monthly_income - user.savings_goal;
+                const response = `Oi ${user.pushname || 'Campeão'}! 🐷\n\nTudo pronto. Já vi aqui que sua meta é poupar *R$ ${user.savings_goal}* este mês. 🎯\nIsso deixa você com cerca de *R$ ${available}* para gastos livres.\n\nAgora é só me avisar sempre que gastar algo. Ex: "Gastei 30 reais no almoço".\n\n👇 *Vamos testar?* Me conta sua última compra!`;
+
+                await client.sendMessage(message.from, response);
+                return; // Stop here, no AI needed for this scripted welcome
+            }
+        }
+
         if (bodyLower === '/esquecer') {
             await sessionService.clearContext(user.id);
             await sessionService.clearPdfState(user.id);
