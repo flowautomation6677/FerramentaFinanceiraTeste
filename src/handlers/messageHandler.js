@@ -45,11 +45,41 @@ async function handleMessage(message) {
 
         const bodyLower = message.body.toLowerCase().trim();
 
-        // COMMAND: /esquecer (Clear Context)
+        // COMMAND: /onboarding (Trigger Intro without deleting Data)
+        if (bodyLower === '/onboarding' || bodyLower === '/start') {
+            await sessionService.clearContext(user.id);
+            await sessionService.clearPdfState(user.id);
+            await sessionService.clearPendingCorrection(user.id);
+
+            // Trick: Replace message body with instruction so AI generates the onboarding text
+            message.body = "Aja como se fosse meu primeiro acesso. Faça sua introdução de boas-vindas e explique como você pode me ajudar financeiramente.";
+
+            // Let flow continue... (It will skip other commands and hit TextStrategy)
+        }
         if (bodyLower === '/esquecer') {
             await sessionService.clearContext(user.id);
             await sessionService.clearPdfState(user.id);
-            return message.reply("🧹 Memória limpa! O que vamos fazer agora?");
+            await sessionService.clearPendingCorrection(user.id);
+            return message.reply("🧹 Memória de curto prazo limpa! Esqueci nossa conversa recente.\n(Seus dados salvos continuam aqui).");
+        }
+
+        // COMMAND: /reset (Hard Reset - New User Simulation)
+        if (bodyLower === '/reset' || bodyLower === '/novo_usuario') {
+            await message.reply("⚠️ Iniciando reset total de fábrica...");
+            try {
+                // 1. Clear Redis
+                await sessionService.clearContext(user.id);
+                await sessionService.clearPdfState(user.id);
+                await sessionService.clearPendingCorrection(user.id);
+
+                // 2. Delete DB Params
+                await userRepo.delete(user.id);
+
+                return message.reply("✨ Tudo apagado! Sou um novo bot para você.\nMande um 'Oi' para começar do zero.");
+            } catch (e) {
+                logger.error("Reset Error", e);
+                return message.reply("❌ Erro ao resetar. Tente novamente.");
+            }
         }
 
         // COMMAND: /relatorio (PDF Report)

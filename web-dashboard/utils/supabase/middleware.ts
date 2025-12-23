@@ -49,5 +49,21 @@ export async function updateSession(request: NextRequest) {
         return NextResponse.redirect(url)
     }
 
+    // RBAC Check for Admin Routes
+    if (user && request.nextUrl.pathname.startsWith('/admin')) {
+        const { data: profile } = await supabase
+            .from('perfis')
+            .select('is_admin')
+            .eq('auth_user_id', user.id)
+            .single()
+
+        if (!profile?.is_admin) {
+            // Not authorized -> Redirect to standard dashboard
+            const url = request.nextUrl.clone()
+            url.pathname = '/dashboard'
+            return NextResponse.redirect(url)
+        }
+    }
+
     return supabaseResponse
 }

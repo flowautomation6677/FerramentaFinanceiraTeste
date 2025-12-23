@@ -60,6 +60,32 @@ class UserRepository {
         }
         return true;
     }
+
+    async delete(userId) {
+        // 1. Delete Transactions (Cascade is usually automatic, but being explicit is safer for code logic)
+        const { error: txError } = await supabase
+            .from('transacoes')
+            .delete()
+            .eq('user_id', userId);
+
+        if (txError) {
+            logger.error("Repo Error (User.delete - transactions)", { error: txError });
+            // Continue to try deleting profile? or throw? 
+            // If FK constraint forbids deleting profile with existing tx, we must succeed here.
+        }
+
+        // 2. Delete Profile
+        const { error } = await supabase
+            .from('perfis')
+            .delete()
+            .eq('id', userId);
+
+        if (error) {
+            logger.error("Repo Error (User.delete)", { error });
+            throw new Error("Falha ao deletar usuário");
+        }
+        return true;
+    }
 }
 
 module.exports = new UserRepository();

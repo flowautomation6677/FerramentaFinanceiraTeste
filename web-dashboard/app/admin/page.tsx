@@ -10,6 +10,7 @@ import TheLab from '@/components/admin/sections/TheLab';
 import TheCFO from '@/components/admin/sections/TheCFO';
 import TheSRE from '@/components/admin/sections/TheSRE';
 
+// This will be handled by layout.tsx for better security
 export default function AdminDashboard() {
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
