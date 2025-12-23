@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Porquim 360 - Gestão Financeira Inteligente",
+  title: "Me Poupey - Gestão Financeira Inteligente",
   description: "Seu assistente financeiro pessoal no WhatsApp. Controle gastos, investimentos e metas com inteligência artificial.",
 };
 

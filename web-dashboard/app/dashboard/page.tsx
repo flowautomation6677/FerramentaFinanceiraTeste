@@ -137,7 +137,7 @@ export default async function DashboardPage({
                             <div className="md:col-span-1 space-y-6">
                                 {/* Card de Conexão */}
                                 <div className="rounded-[2rem] bg-indigo-600 p-6 text-white shadow-lg shadow-indigo-600/20">
-                                    <h3 className="text-lg font-bold">Porquim IA</h3>
+                                    <h3 className="text-lg font-bold">Me Poupey AI</h3>
                                     <p className="mt-2 text-indigo-100 text-sm opacity-90">
                                         Seu assistente está conectado e monitorando seus gastos pelo número:
                                     </p>

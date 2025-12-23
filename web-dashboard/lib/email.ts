@@ -20,7 +20,7 @@ export const sendWelcomeEmail = async (email: string, phone: string) => {
 
     const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h1>Bem-vindo ao Porquim 360! 🐷</h1>
+      <h1>Bem-vindo ao Me Poupey! 🐷</h1>
       <p>Sua assinatura foi confirmada com sucesso.</p>
       
       <p><strong>Passo 1:</strong> Acesse seu Dashboard:</p>
@@ -36,9 +36,9 @@ export const sendWelcomeEmail = async (email: string, phone: string) => {
 
     try {
         const info = await transporter.sendMail({
-            from: '"Porquim 360" <noreply@porquim360.com>',
+            from: '"Me Poupey" <noreply@mepoupey.com.br>',
             to: email,
-            subject: '🚀 Acesso Liberado: Bem-vindo ao Porquim 360',
+            subject: '🚀 Acesso Liberado: Bem-vindo ao Me Poupey',
             html,
         });
         console.log(`Email sent: ${info.messageId}`);

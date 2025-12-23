@@ -42,7 +42,7 @@ export default function AuthPage() {
             {/* Coluna Esquerda: Mensagem / Branding (Desktop) */}
             <div className="hidden w-1/2 flex-col justify-between bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-900/40 via-[#020617] to-[#020617] p-12 lg:flex">
                 <div className="font-bold text-2xl tracking-tighter text-indigo-500">
-                    PORQUIM<span className="text-white">IA</span>
+                    Me <span className="text-white">Poupey</span>
                 </div>
                 <div className="space-y-6">
                     <h1 className="text-6xl font-extrabold leading-tight tracking-tight text-white">
@@ -57,7 +57,7 @@ export default function AuthPage() {
                     </p>
                 </div>
                 <div className="flex gap-4 text-sm text-slate-500">
-                    <span>© 2024 Porquim IA</span>
+                    <span>© 2024 Me Poupey</span>
                     <span>Termos de Uso</span>
                 </div>
             </div>
@@ -69,7 +69,7 @@ export default function AuthPage() {
                     {/* Logo Mobile */}
                     <div className="flex justify-center lg:hidden mb-8">
                         <span className="text-2xl font-bold tracking-tighter text-indigo-500">
-                            PORQUIM<span className="text-white">IA</span>
+                            Me <span className="text-white">Poupey</span>
                         </span>
                     </div>
 

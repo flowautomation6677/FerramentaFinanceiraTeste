@@ -60,7 +60,7 @@ export default function DashboardHeader({
                 </div>
                 <div>
                     <h2 className="text-sm font-medium text-slate-400">Bem-vindo de volta,</h2>
-                    <h1 className="text-lg font-bold text-white">Porquim Trader 🐷</h1>
+                    <h1 className="text-lg font-bold text-white">Me Poupey 🐷</h1>
                 </div>
             </div>
 

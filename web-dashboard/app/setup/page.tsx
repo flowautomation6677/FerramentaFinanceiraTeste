@@ -175,7 +175,7 @@ export default function SetupPage() {
                         </div>
 
                         <a
-                            href={`https://wa.me/${whatsapp.replace(/\D/g, "") ? "55" + whatsapp.replace(/\D/g, "") : ""}?text=Olá! Quero começar a economizar com a Porquim IA.`}
+                            href={`https://wa.me/${whatsapp.replace(/\D/g, "") ? "55" + whatsapp.replace(/\D/g, "") : ""}?text=Olá! Quero começar a economizar com o Me Poupey.`}
                             target="_blank"
                             className="block"
                         >
