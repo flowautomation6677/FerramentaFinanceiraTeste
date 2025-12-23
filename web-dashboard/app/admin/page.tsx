@@ -3,12 +3,13 @@
 import { useState, useEffect } from 'react';
 import { Title, Text, Tab, TabList, TabGroup, TabPanel, TabPanels, Grid, Card, Flex, Metric, Icon, Badge } from "@tremor/react";
 import { createBrowserClient } from "@supabase/ssr";
-import { Activity, DollarSign, Cpu, Search, AlertTriangle } from 'lucide-react';
+import { Activity, DollarSign, Cpu, Search, AlertTriangle, Users } from 'lucide-react';
 
 // Sections
 import TheLab from '@/components/admin/sections/TheLab';
 import TheCFO from '@/components/admin/sections/TheCFO';
 import TheSRE from '@/components/admin/sections/TheSRE';
+import ThePO from '@/components/admin/sections/ThePO';
 
 // This will be handled by layout.tsx for better security
 export default function AdminDashboard() {
@@ -18,6 +19,7 @@ export default function AdminDashboard() {
     );
     const [efficiencyData, setEfficiencyData] = useState<any[]>([]);
     const [financeData, setFinanceData] = useState<any[]>([]);
+    const [behaviorData, setBehaviorData] = useState<any[]>([]);
 
     // KPIs (Simulated for "Expert" Feel if empty)
     const kpis = [
@@ -31,6 +33,7 @@ export default function AdminDashboard() {
         async function load() {
             const { data: eff } = await supabase.from('view_ai_efficiency').select('*');
             const { data: fin } = await supabase.from('view_financial_metrics').select('*');
+            const { data: beh } = await supabase.from('view_user_behavior_heatmap').select('*');
 
             if (eff && eff.length > 0) setEfficiencyData(eff);
             else {
@@ -43,7 +46,7 @@ export default function AdminDashboard() {
 
             if (fin && fin.length > 0) setFinanceData(fin);
             else {
-                // Mock Data
+                // Mock Data Finance
                 setFinanceData([
                     { date: '2023-10-01', est_cost_usd: 0.45 },
                     { date: '2023-10-02', est_cost_usd: 0.52 },
@@ -53,6 +56,20 @@ export default function AdminDashboard() {
                     { date: '2023-10-06', est_cost_usd: 0.65 },
                     { date: '2023-10-07', est_cost_usd: 0.90 },
                 ]);
+            }
+
+            if (beh && beh.length > 0) setBehaviorData(beh);
+            else {
+                // Mock Heatmap Data (Random distribution)
+                const mockBeh = [];
+                for (let d = 0; d < 7; d++) {
+                    for (let h = 8; h < 22; h++) { // Work hours mostly
+                        if (Math.random() > 0.6) {
+                            mockBeh.push({ day_of_week: d, hour_of_day: h, activity_count: Math.floor(Math.random() * 50) });
+                        }
+                    }
+                }
+                setBehaviorData(mockBeh);
             }
         }
         load();
@@ -98,6 +115,7 @@ export default function AdminDashboard() {
                     <Tab className="px-4 py-2 text-sm font-medium ui-selected:bg-indigo-600 ui-selected:text-white ui-not-selected:text-slate-400 rounded-lg transition-all" icon={Search}>The Lab (AI)</Tab>
                     <Tab className="px-4 py-2 text-sm font-medium ui-selected:bg-emerald-600 ui-selected:text-white ui-not-selected:text-slate-400 rounded-lg transition-all" icon={DollarSign}>The CFO (Fin)</Tab>
                     <Tab className="px-4 py-2 text-sm font-medium ui-selected:bg-rose-600 ui-selected:text-white ui-not-selected:text-slate-400 rounded-lg transition-all" icon={AlertTriangle}>The SRE (Ops)</Tab>
+                    <Tab className="px-4 py-2 text-sm font-medium ui-selected:bg-violet-600 ui-selected:text-white ui-not-selected:text-slate-400 rounded-lg transition-all" icon={Users}>The PO (Product)</Tab>
                 </TabList>
 
                 <TabPanels>
@@ -111,6 +129,10 @@ export default function AdminDashboard() {
 
                     <TabPanel>
                         <TheSRE />
+                    </TabPanel>
+
+                    <TabPanel>
+                        <ThePO behaviorData={behaviorData} />
                     </TabPanel>
                 </TabPanels>
             </TabGroup>
