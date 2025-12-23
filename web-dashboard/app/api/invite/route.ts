@@ -26,7 +26,10 @@ export async function POST(request: Request) {
 
         // Invite User via Supabase Auth
         // Use 'redirectTo' to point to your setup page if needed
-        const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email);
+        const { origin } = new URL(request.url);
+        const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+            redirectTo: `${origin}/auth/callback?next=/update-password`
+        });
 
         if (error) {
             console.error('Error inviting user:', error)

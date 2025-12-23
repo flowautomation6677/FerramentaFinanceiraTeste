@@ -3,7 +3,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { login, signup } from './actions'
+import { login } from './actions'
 import { Loader2, ArrowRight } from 'lucide-react'
 // Simulação de componentes Shadcn para evitar complexidade de instalação
 import { clsx, type ClassValue } from "clsx"
@@ -14,7 +14,6 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export default function AuthPage() {
-    const [activeTab, setActiveTab] = useState<'login' | 'register'>('login')
     const [loading, setLoading] = useState(false)
     const [message, setMessage] = useState<{ text: string, type: 'error' | 'success' } | null>(null)
 
@@ -26,19 +25,9 @@ export default function AuthPage() {
         const formData = new FormData(event.currentTarget)
 
         try {
-            if (activeTab === 'login') {
-                const res = await login(formData)
-                if (res?.error) {
-                    setMessage({ text: res.error, type: 'error' })
-                }
-            } else {
-                const res = await signup(formData)
-                if (res?.error) {
-                    setMessage({ text: res.error, type: 'error' })
-                } else if (res?.success) {
-                    setMessage({ text: res.success, type: 'success' })
-                    setActiveTab('login')
-                }
+            const res = await login(formData)
+            if (res?.error) {
+                setMessage({ text: res.error, type: 'error' })
             }
         } catch (e) {
             setMessage({ text: 'Erro inesperado. Tente novamente.', type: 'error' })
@@ -90,38 +79,12 @@ export default function AuthPage() {
                         transition={{ duration: 0.5 }}
                         className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-xl"
                     >
-                        {/* Tabs Shadcn Style */}
-                        <div className="grid w-full grid-cols-2 rounded-xl bg-slate-900/50 p-1 mb-6">
-                            <button
-                                onClick={() => { setActiveTab('login'); setMessage(null); }}
-                                className={cn(
-                                    "rounded-lg py-2.5 text-sm font-medium transition-all duration-200",
-                                    activeTab === 'login'
-                                        ? "bg-indigo-600 text-white shadow-lg"
-                                        : "text-slate-400 hover:text-white"
-                                )}
-                            >
-                                Entrar
-                            </button>
-                            <button
-                                onClick={() => { setActiveTab('register'); setMessage(null); }}
-                                className={cn(
-                                    "rounded-lg py-2.5 text-sm font-medium transition-all duration-200",
-                                    activeTab === 'register'
-                                        ? "bg-indigo-600 text-white shadow-lg"
-                                        : "text-slate-400 hover:text-white"
-                                )}
-                            >
-                                Criar Conta
-                            </button>
-                        </div>
-
                         <div className="mb-6 text-center">
                             <h2 className="text-2xl font-bold text-white">
-                                {activeTab === 'login' ? 'Bem-vindo de volta' : 'Comece sua jornada'}
+                                Bem-vindo de volta
                             </h2>
                             <p className="text-slate-400 text-sm mt-1">
-                                {activeTab === 'login' ? 'Digite seus dados para acessar o painel.' : 'Preencha os campos para criar seu perfil.'}
+                                Digite seus dados para acessar o painel.
                             </p>
                         </div>
 
@@ -142,23 +105,6 @@ export default function AuthPage() {
                                 )}
                             </AnimatePresence>
 
-                            {activeTab === 'register' && (
-                                <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: 'auto' }}
-                                    className="space-y-4 overflow-hidden"
-                                >
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Nome Completo</label>
-                                        <input name="name" type="text" placeholder="Ex: Luiz Silva" className="w-full rounded-xl bg-slate-900/50 border border-white/10 px-4 py-3 text-white placeholder-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">WhatsApp</label>
-                                        <input name="whatsapp" type="tel" placeholder="11999998888" className="w-full rounded-xl bg-slate-900/50 border border-white/10 px-4 py-3 text-white placeholder-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition" />
-                                    </div>
-                                </motion.div>
-                            )}
-
                             <div className="space-y-1">
                                 <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">E-mail</label>
                                 <input name="email" type="email" required placeholder="seu@email.com" className="w-full rounded-xl bg-slate-900/50 border border-white/10 px-4 py-3 text-white placeholder-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition" />
@@ -177,7 +123,7 @@ export default function AuthPage() {
                                 >
                                     <span className="relative z-10 flex items-center gap-2">
                                         {loading && <Loader2 className="animate-spin" size={18} />}
-                                        {activeTab === 'login' ? 'Acessar Painel' : 'Criar Conta Grátis'}
+                                        Acessar Painel
                                         {!loading && <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />}
                                     </span>
                                     <div className="absolute inset-0 -z-0 bg-gradient-to-r from-purple-600 to-indigo-600 opacity-0 transition-opacity group-hover:opacity-100"></div>
