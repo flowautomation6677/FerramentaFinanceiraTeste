@@ -16,13 +16,13 @@ const client = new Client({
     puppeteer: {
         // Explicitly use the executablePath from the root puppeteer package
         executablePath: puppeteer ? puppeteer.executablePath() : undefined,
-        '--disable-gpu',
-        '--disable-dev-shm-usage',
-        '--no-sandbox',
-        '--disable-setuid-sandbox'
+        args: [
+            '--disable-gpu',
+            '--disable-dev-shm-usage',
+            '--no-sandbox',
+            '--disable-setuid-sandbox'
         ],
-headless: true // REQUIRED for Railway/Linux (No GUI)
-    }
+        headless: true // REQUIRED for Railway/Linux (No GUI)
     }
 });
 
