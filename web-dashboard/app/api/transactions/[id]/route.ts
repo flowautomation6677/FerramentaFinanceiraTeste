@@ -4,10 +4,11 @@ import { NextResponse } from 'next/server'
 
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    props: { params: Promise<{ id: string }> }
 ) {
-    const supabase = await createClient()
+    const params = await props.params;
     const { id } = params
+    const supabase = await createClient()
 
     // Get body
     const body = await request.json()
