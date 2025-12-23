@@ -18,6 +18,8 @@ import {
 } from "@tremor/react";
 import { Search, UserCog, User, ShieldCheck, Trash2, CheckCircle, X } from 'lucide-react';
 import { createBrowserClient } from "@supabase/ssr";
+import { InviteModal } from "@/components/admin/InviteModal";
+import { DeleteModal } from "@/components/admin/DeleteModal";
 
 // UX/UI Animation Component
 const SuccessModal = ({ isOpen, onClose, email }: { isOpen: boolean; onClose: () => void; email: string }) => {
@@ -52,11 +54,14 @@ const SuccessModal = ({ isOpen, onClose, email }: { isOpen: boolean; onClose: ()
     );
 };
 
+
 export default function UsersPage() {
+    // ... scope continues ...
     const supabase = createBrowserClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
+
 
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -70,7 +75,6 @@ export default function UsersPage() {
     async function fetchUsers() {
         setLoading(true);
         try {
-            // Fetch from our new API (Auth + Profiles)
             const res = await fetch('/api/admin/users');
             const data = await res.json();
             if (data.users) {
@@ -96,8 +100,8 @@ export default function UsersPage() {
             });
             const data = await res.json();
             if (data.success) {
-                // Optimistic Update
-                setUsers(users.map(u => u.id === userId ? { ...u, is_admin: !currentStatus } : u));
+                // Defensive update: verify prev exists
+                setUsers(prev => (prev || []).map(u => u.id === userId ? { ...u, is_admin: !currentStatus } : u));
                 alert("Role atualizada com sucesso!");
             } else {
                 alert("Erro ao atualizar: " + data.error);
@@ -107,61 +111,98 @@ export default function UsersPage() {
         }
     }
 
+    // ... (rest)
+
+    // Filter Users
+    const safeUsers = Array.isArray(users) ? users : [];
+    const filteredUsers = safeUsers.filter((user) =>
+        (user.whatsapp_number && user.whatsapp_number.toLowerCase().includes(search.toLowerCase())) ||
+        (user.email && user.email.toLowerCase().includes(search.toLowerCase())) ||
+        (user.name && user.name.toLowerCase().includes(search.toLowerCase())) ||
+        // Defensive check for user.id
+        (user.id && user.id.toLowerCase().includes(search.toLowerCase()))
+    );
+
     // Utils
     const formatPhoneNumber = (phone: string) => {
         if (!phone) return "Sem número";
-        // Remove @c.us or other suffixes
         const clean = phone.replace('@c.us', '');
-        // Format +55 (21) 99999-9999
         if (clean.length === 12 || clean.length === 13) {
-            // Assuming 55 + 2 digits DDD + 8 or 9 digits number
             const ddd = clean.substring(2, 4);
             const part1 = clean.substring(4, 9);
             const part2 = clean.substring(9);
             return `+55 (${ddd}) ${part1}-${part2}`;
         }
-        return clean; // Fallback
+        return clean;
     };
 
     // Invite Logic
-    const [inviteEmail, setInviteEmail] = useState("");
-    const [isInviting, setIsInviting] = useState(false);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     const [lastInvitedEmail, setLastInvitedEmail] = useState("");
 
-    async function handleInvite() {
-        if (!inviteEmail) return alert("Digite um email");
-        setIsInviting(true);
+    // Delete Logic
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [userToDelete, setUserToDelete] = useState<any>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    async function handleInvite(email: string, name: string, whatsapp: string) {
         try {
             const res = await fetch('/api/invite', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: inviteEmail })
+                body: JSON.stringify({ email, name, whatsapp })
             });
             const data = await res.json();
             if (data.success) {
-                setLastInvitedEmail(inviteEmail);
-                setShowSuccessModal(true);
-                setInviteEmail("");
+                setLastInvitedEmail(email);
+                setIsInviteModalOpen(false); // Close Input Modal
+                setShowSuccessModal(true);   // Open Success Modal
+                fetchUsers(); // Refresh list to show new pending user
             } else {
                 alert("Erro ao enviar: " + data.error);
             }
         } catch (e) {
             alert("Erro desconhecido");
         }
-        setIsInviting(false);
     }
 
-    // Filter Users
-    const filteredUsers = users.filter((user) =>
-        (user.whatsapp_number && user.whatsapp_number.toLowerCase().includes(search.toLowerCase())) ||
-        (user.email && user.email.toLowerCase().includes(search.toLowerCase())) ||
-        (user.name && user.name.toLowerCase().includes(search.toLowerCase())) ||
-        user.id.toLowerCase().includes(search.toLowerCase())
-    );
+    const handleDeleteConfirm = async () => {
+        if (!userToDelete) return;
+
+        setIsDeleting(true);
+        try {
+            const res = await fetch(`/api/admin/users?userId=${userToDelete.id}`, { method: 'DELETE' });
+            const data = await res.json();
+            if (data.success) {
+                // Success
+                setIsDeleteModalOpen(false);
+                setUserToDelete(null);
+                fetchUsers(); // Refresh list
+            } else {
+                alert("Erro ao deletar: " + data.error);
+            }
+        } catch (e) {
+            alert("Erro de conexão ao deletar.");
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     return (
         <div className="space-y-6">
+            <InviteModal
+                isOpen={isInviteModalOpen}
+                onClose={() => setIsInviteModalOpen(false)}
+                onInvite={handleInvite}
+            />
+            <DeleteModal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleDeleteConfirm}
+                userName={userToDelete?.name}
+                loading={isDeleting}
+            />
             <SuccessModal
                 isOpen={showSuccessModal}
                 onClose={() => setShowSuccessModal(false)}
@@ -178,20 +219,14 @@ export default function UsersPage() {
                 </div>
                 <div className="w-full sm:w-auto flex flex-col sm:flex-row gap-3">
                     {/* Invite Input Group */}
-                    <div className="flex gap-2">
-                        <TextInput
-                            placeholder="Email para convite..."
-                            value={inviteEmail}
-                            onValueChange={setInviteEmail}
-                            className="sm:w-64"
-                        />
-                        <button
-                            onClick={handleInvite}
-                            disabled={isInviting}
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors disabled:opacity-50 whitespace-nowrap"
+                    <div>
+                        <Button
+                            icon={UserCog}
+                            color="indigo"
+                            onClick={() => setIsInviteModalOpen(true)}
                         >
-                            {isInviting ? 'Enviando...' : 'Convidar'}
-                        </button>
+                            + Convidar Usuário
+                        </Button>
                     </div>
 
                     <TextInput
@@ -268,6 +303,19 @@ export default function UsersPage() {
                                                 onClick={() => toggleRole(user.id, user.is_admin)}
                                             >
                                                 {user.is_admin ? 'Virar User' : 'Virar Admin'}
+                                            </Button>
+
+                                            <Button
+                                                size="xs"
+                                                variant="secondary"
+                                                color="red"
+                                                icon={Trash2}
+                                                onClick={() => {
+                                                    setUserToDelete(user);
+                                                    setIsDeleteModalOpen(true);
+                                                }}
+                                            >
+                                                Excluir
                                             </Button>
                                         </div>
                                     </TableCell>

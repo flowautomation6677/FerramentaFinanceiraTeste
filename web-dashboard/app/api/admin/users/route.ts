@@ -65,3 +65,32 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
+
+export async function DELETE(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const userId = searchParams.get('userId');
+
+        if (!userId) return NextResponse.json({ error: 'Missing User ID' }, { status: 400 });
+
+        // Delete from Auth (This usually cascades to public table if configured, but let's be safe)
+        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+        if (authError) throw authError;
+
+        // Optionally ensure profile is gone (if no cascade)
+        const { error: dbError } = await supabaseAdmin
+            .from('perfis')
+            .delete()
+            .eq('id', userId);
+
+        // Ignore dbError if it's just "row not found" (already cascaded)
+        // But for safety in this specific setup, we just log it if it fails for other reasons
+        if (dbError) console.warn("Profile delete warning:", dbError);
+
+        return NextResponse.json({ success: true });
+
+    } catch (error: any) {
+        console.error('Error deleting user:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

@@ -2,7 +2,7 @@
 
 import { Card, Title, Text, Metric, Grid, BarList, DonutChart, Legend } from "@tremor/react";
 import { Users, Clock, Zap, MessageCircle } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 // Mock Funnel Data (Simulated for Demo)
 const funnelData = [
@@ -20,6 +20,11 @@ const featuresData = [
 ];
 
 export default function ThePO({ behaviorData }: { behaviorData: any[] }) {
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // Process Heatmap Data (Transform DB row {day, hour, count} -> Grid)
     const heatmapGrid = useMemo(() => {
@@ -50,6 +55,8 @@ export default function ThePO({ behaviorData }: { behaviorData: any[] }) {
         if (ratio < 0.75) return 'bg-indigo-500/80';
         return 'bg-indigo-400';
     };
+
+    if (!isMounted) return null;
 
     return (
         <div className="mt-6 space-y-6">
@@ -103,7 +110,7 @@ export default function ThePO({ behaviorData }: { behaviorData: any[] }) {
                     <BarList
                         data={funnelData}
                         color="indigo"
-                        valueFormatter={(val) => `${val}%`}
+                        valueFormatter={(val: number) => `${val}%`}
                         className="mt-2"
                     />
                 </Card>
