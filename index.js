@@ -54,5 +54,9 @@ client.on('disconnected', (reason) => {
     logger.warn('❌ Cliente desconectado', { reason: reason });
 });
 
-// Inicializa
+// Inicializa Server (Health Checks & Webhooks)
+const { startServer } = require('./src/server');
+startServer();
+
+// Inicializa WhatsApp
 client.initialize();
