@@ -2,6 +2,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendInviteEmail } from '@/lib/email'
+import { getBaseUrl } from '@/utils/url'
 
 // Initialize Supabase Admin (Service Role)
 // We need this to bypass RLS and use adminAuth functions
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 })
         }
 
-        const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const siteUrl = getBaseUrl();
 
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: 'invite',

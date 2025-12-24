@@ -13,8 +13,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+import { getBaseUrl } from '@/utils/url';
+
+// ... (imports remain)
+
 export const sendWelcomeEmail = async (email: string, phone: string) => {
-  const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const dashboardUrl = getBaseUrl();
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

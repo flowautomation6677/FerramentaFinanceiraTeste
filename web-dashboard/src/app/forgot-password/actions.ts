@@ -2,6 +2,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { sendPasswordResetEmail } from '@/lib/email';
+import { getBaseUrl } from '@/utils/url';
 
 export async function requestPasswordReset(formData: FormData) {
     const email = formData.get('email') as string;
@@ -29,7 +30,7 @@ export async function requestPasswordReset(formData: FormData) {
             type: 'recovery',
             email: email,
             options: {
-                redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/finish?next=/update-password`
+                redirectTo: `${getBaseUrl()}/auth/finish?next=/update-password`
             }
         });
 
