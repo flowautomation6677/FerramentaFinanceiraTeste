@@ -70,7 +70,7 @@ export default function WelcomeManager({ userName }: { userName: string }) {
 
                             {/* CTA */}
                             <a
-                                href="https://wa.me/5521984646902?text=Oi! Quero registrar meu primeiro gasto."
+                                href={`https://wa.me/${process.env.NEXT_PUBLIC_SUPPORT_PHONE || '5521984646902'}?text=Oi! Quero registrar meu primeiro gasto.`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={handleClose}

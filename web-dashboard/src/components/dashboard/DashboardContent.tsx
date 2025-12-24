@@ -1,8 +1,14 @@
+import dynamic from 'next/dynamic'
 import StatsGrid from '@/components/dashboard/StatsGrid'
-import ExpenseChart from '@/components/dashboard/ExpenseChart'
 import TransactionFeed from '@/components/dashboard/TransactionFeed'
 import { formatPhoneNumber } from '@/utils/formatters'
 import { DashboardData } from '@/types/dashboard'
+
+// Lazy Load ExpenseChart
+const ExpenseChart = dynamic(() => import('@/components/dashboard/ExpenseChart'), {
+    ssr: false,
+    loading: () => <div className="h-[300px] w-full bg-slate-100/10 rounded-3xl animate-pulse" />
+})
 
 export default function DashboardContent({ profile, transactions, prevTransactions }: DashboardData) {
     if (!profile) return null;
@@ -39,7 +45,7 @@ export default function DashboardContent({ profile, transactions, prevTransactio
                             </span>
                         </div>
                         <a
-                            href="https://wa.me/5521984646902?text=Olá! Quero falar com o Me Poupey."
+                            href={`https://wa.me/${process.env.NEXT_PUBLIC_SUPPORT_PHONE || '5521984646902'}?text=Olá! Quero falar com o Me Poupey.`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="mt-4 block w-full rounded-xl bg-white py-3 text-center text-sm font-bold text-indigo-600 transition hover:bg-indigo-50"
