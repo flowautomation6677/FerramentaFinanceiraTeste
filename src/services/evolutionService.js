@@ -22,12 +22,14 @@ class EvolutionService {
 
     /**
      * Send a text message
-     * @param {string} to - Remote JID (e.g., 5511999999999@s.whatsapp.net)
+     * @param {string} to - Remote JID
      * @param {string} text - Message content
+     * @param {string} [instanceName] - Optional instance name override
      */
-    async sendText(to, text) {
+    async sendText(to, text, instanceName) {
         try {
-            const url = `/message/sendText/${this.instanceName}`;
+            const targetInstance = instanceName || this.instanceName;
+            const url = `/message/sendText/${targetInstance}`;
             const body = {
                 number: to,
                 options: {
@@ -53,12 +55,12 @@ class EvolutionService {
      * @param {string} to - Remote JID
      * @param {object} media - { mimetype, data (base64), filename, caption }
      * @param {string} type - 'image', 'audio', 'document'
+     * @param {string} [instanceName] - Optional instance name override
      */
-    async sendMedia(to, media, type = 'document') {
+    async sendMedia(to, media, type = 'document', instanceName) {
         try {
-            // Evolution API uses specific endpoints for media
-            // /message/sendMedia/{instance}
-            const url = `/message/sendMedia/${this.instanceName}`;
+            const targetInstance = instanceName || this.instanceName;
+            const url = `/message/sendMedia/${targetInstance}`;
 
             const body = {
                 number: to,

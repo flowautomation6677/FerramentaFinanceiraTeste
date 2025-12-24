@@ -31,8 +31,6 @@
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "^2.16.105",
     "qrcode": "^1.5.4",
-    "qrcode-terminal": "^0.12.0",
-    "whatsapp-web.js": "^1.34.2",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0",
     "xlsx": "^0.18.5",

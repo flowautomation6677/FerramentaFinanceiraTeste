@@ -13,6 +13,9 @@ class EvolutionAdapter {
         this.messageType = webhookData.data?.messageType || 'conversation';
         this.timestamp = webhookData.data?.messageTimestamp;
 
+        // Capture Instance Name to reply correctly
+        this.instanceName = webhookData.instance;
+
         // Sender ID (Remote JID)
         this.from = this.key.remoteJid;
 
@@ -71,7 +74,7 @@ class EvolutionAdapter {
         // Existing logic: await message.reply("text") or await message.reply(media)
 
         if (typeof content === 'string') {
-            return await evolutionService.sendText(this.from, content);
+            return await evolutionService.sendText(this.from, content, this.instanceName);
         }
 
         if (content && content.mimetype && content.data) {
@@ -81,7 +84,7 @@ class EvolutionAdapter {
             if (content.mimetype.startsWith('image')) type = 'image';
             if (content.mimetype.startsWith('audio')) type = 'audio';
 
-            return await evolutionService.sendMedia(this.from, content, type);
+            return await evolutionService.sendMedia(this.from, content, type, this.instanceName);
         }
     }
 
