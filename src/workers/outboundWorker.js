@@ -1,5 +1,5 @@
 const { Worker } = require('bullmq');
-const client = require('../services/whatsappClient');
+const evolutionService = require('../services/evolutionService');
 const logger = require('../services/loggerService');
 const redis = require('../services/redisClient');
 
@@ -14,7 +14,13 @@ const outboundWorker = new Worker('outbound-messages', async (job) => {
     logger.debug(`[Outbound] Sending to ${chatId}`);
 
     try {
-        await client.sendMessage(chatId, text, options);
+        // Simple logic for Text vs Media
+        // If 'text' is an object with base64/mimetype, treat as media
+        if (typeof text === 'object' && text.data && text.mimetype) {
+            await evolutionService.sendMedia(chatId, text, 'document'); // Default to document or infer
+        } else {
+            await evolutionService.sendText(chatId, text);
+        }
     } catch (err) {
         logger.error(`[Outbound] Failed to send to ${chatId}`, err);
         throw err;

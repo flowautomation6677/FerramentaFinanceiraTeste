@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const { AIResponseSchema } = require('../schemas/transactionSchema');
-// We need the client to send the access denied message specifically
-const client = require('../services/whatsappClient');
+// We need the service to send the access denied message specifically
+const evolutionService = require('../services/evolutionService');
 const ffmpegPath = require('ffmpeg-static');
 const supabase = require('../services/supabaseClient');
 const { chatCompletion, analyzeImage, transcribeAudio, generateEmbedding, generateBatchEmbeddings } = require('../services/openaiService');
@@ -43,7 +43,7 @@ async function handleMessage(message) {
         if (!user) {
             // SECURITY: Only allow registered users
             logger.warn(`🚫 Acesso Negado: ${message.from}`);
-            await client.sendMessage(message.from, "❌ *Acesso Negado*\n\nEste bot é privado e exclusivo para usuários convidados.\n\nPeça seu convite ao administrador para começar.");
+            await evolutionService.sendText(message.from, "❌ *Acesso Negado*\n\nEste bot é privado e exclusivo para usuários convidados.\n\nPeça seu convite ao administrador para começar.");
             return;
         } else if (pushname && !user.name) {
             // Backfill name if missing for existing users
@@ -78,7 +78,7 @@ async function handleMessage(message) {
                 const available = user.monthly_income - user.savings_goal;
                 const response = `Oi ${user.pushname || 'Campeão'}! 🐷\n\nTudo pronto. Já vi aqui que sua meta é poupar *R$ ${user.savings_goal}* este mês. 🎯\nIsso deixa você com cerca de *R$ ${available}* para gastos livres.\n\nAgora é só me avisar sempre que gastar algo. Ex: "Gastei 30 reais no almoço".\n\n👇 *Vamos testar?* Me conta sua última compra!`;
 
-                await client.sendMessage(message.from, response);
+                await evolutionService.sendText(message.from, response);
                 return; // Stop here, no AI needed for this scripted welcome
             }
         }
