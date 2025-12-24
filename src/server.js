@@ -6,7 +6,7 @@ const EvolutionAdapter = require('./adapters/evolutionAdapter');
 const evolutionService = require('./services/evolutionService');
 
 const app = express();
-const PORT = 4001; // Port 4001 forced to avoid conflict with Next.js (3000)
+const PORT = process.env.PORT || 4001; // Railway requires process.env.PORT
 
 // Increase limit for media payloads
 app.use(bodyParser.json({ limit: '50mb' }));
