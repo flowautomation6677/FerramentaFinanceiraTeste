@@ -1,5 +1,7 @@
 
+
 import { createClient } from '@supabase/supabase-js'
+import 'server-only'
 import { NextResponse } from 'next/server'
 
 // Initialize Supabase Admin (Service Role)
@@ -43,12 +45,29 @@ export async function GET() {
     }
 }
 
+import { z } from 'zod'
+
+// Validation Schemas
+const updateRoleSchema = z.object({
+    userId: z.string().uuid(),
+    isAdmin: z.boolean()
+})
+
+const deleteUserSchema = z.object({
+    userId: z.string().uuid()
+})
+
 export async function PATCH(request: Request) {
     try {
         const body = await request.json();
-        const { userId, isAdmin } = body;
 
-        if (!userId) return NextResponse.json({ error: 'Missing User ID' }, { status: 400 });
+        // Zod Validation
+        const validation = updateRoleSchema.safeParse(body);
+        if (!validation.success) {
+            return NextResponse.json({ error: 'Invalid Input', details: validation.error.format() }, { status: 400 });
+        }
+
+        const { userId, isAdmin } = validation.data;
 
         // Update Profile
         const { error } = await supabaseAdmin
@@ -69,9 +88,15 @@ export async function PATCH(request: Request) {
 export async function DELETE(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId');
+        const rawUserId = searchParams.get('userId');
 
-        if (!userId) return NextResponse.json({ error: 'Missing User ID' }, { status: 400 });
+        // Zod Validation
+        const validation = deleteUserSchema.safeParse({ userId: rawUserId });
+        if (!validation.success) {
+            return NextResponse.json({ error: 'Invalid Input', details: validation.error.format() }, { status: 400 });
+        }
+
+        const { userId } = validation.data;
 
         if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
             console.error("❌ Erro CRÍTICO: SUPABASE_SERVICE_ROLE_KEY não definida.");
