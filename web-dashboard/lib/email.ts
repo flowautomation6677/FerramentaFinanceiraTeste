@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.ethereal.email',
@@ -35,6 +35,7 @@ export const sendWelcomeEmail = async (email: string, phone: string) => {
   // 1. Try Resend SDK
   if (process.env.RESEND_API_KEY) {
     try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
       const data = await resend.emails.send({
         from: 'Me Poupey <nao-responda@mepoupey.flowrocket.com.br>', // Replace with your verified domain
         to: email,
@@ -90,6 +91,7 @@ export const sendPasswordResetEmail = async (email: string, resetLink: string) =
   // 1. Try Resend SDK
   if (process.env.RESEND_API_KEY) {
     try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
       const data = await resend.emails.send({
         from: 'Me Poupey <nao-responda@mepoupey.flowrocket.com.br>', // Replace with your verified domain
         to: email,
@@ -151,6 +153,7 @@ export const sendInviteEmail = async (email: string, inviteLink: string) => {
   // 1. Try Resend SDK
   if (process.env.RESEND_API_KEY) {
     try {
+      const resend = new Resend(process.env.RESEND_API_KEY);
       const data = await resend.emails.send({
         from: 'Me Poupey <nao-responda@mepoupey.flowrocket.com.br>',
         to: email,
