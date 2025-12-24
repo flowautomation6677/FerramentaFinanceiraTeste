@@ -91,8 +91,8 @@ export default function SetupPage() {
 
             if (profileError) throw profileError;
 
-            // Success! Redirect to Dashboard
-            router.push('/dashboard');
+            // Success! Redirect to Dashboard with welcome flag
+            router.push('/dashboard?welcome=true');
 
         } catch (error: any) {
             alert("Erro ao salvar: " + error.message);

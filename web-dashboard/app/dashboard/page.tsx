@@ -6,6 +6,7 @@ import StatsGrid from '@/components/dashboard/StatsGrid'
 import ExpenseChart from '@/components/dashboard/ExpenseChart'
 import TransactionFeed from '@/components/dashboard/TransactionFeed'
 import WhatsAppLinker from '@/components/dashboard/WhatsAppLinker'
+import WelcomeManager from '@/components/dashboard/WelcomeManager'
 
 export default async function DashboardPage({
     searchParams,
@@ -101,6 +102,9 @@ export default async function DashboardPage({
     return (
 
         <div className="space-y-8 animate-in fade-in duration-500">
+            {/* Welcome Logic */}
+            <WelcomeManager userName={user.user_metadata?.full_name || profile?.name || "Investidor"} />
+
             {/* Header Inteligente com Filtro */}
             <DashboardHeader
                 userEmail={user.email}
@@ -147,9 +151,14 @@ export default async function DashboardPage({
                                             {formatPhoneNumber(profile.whatsapp_number)}
                                         </span>
                                     </div>
-                                    <button className="mt-4 w-full rounded-xl bg-white py-3 text-sm font-bold text-indigo-600 transition hover:bg-indigo-50">
+                                    <a
+                                        href="https://wa.me/5521984646902?text=Olá! Quero falar com o Me Poupey."
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-4 block w-full rounded-xl bg-white py-3 text-center text-sm font-bold text-indigo-600 transition hover:bg-indigo-50"
+                                    >
                                         Abrir no WhatsApp
-                                    </button>
+                                    </a>
                                 </div>
                             </div>
                         </div>
