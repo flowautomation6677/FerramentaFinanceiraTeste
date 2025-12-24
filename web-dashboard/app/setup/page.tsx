@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-import { Title, Text, Card, TextInput, Button, Metric, ProgressBar } from "@tremor/react";
+import { useState, useEffect } from 'react';
+import { Title, Text, Card, TextInput, Button } from "@tremor/react";
 import { createBrowserClient } from "@supabase/ssr";
-import { Smartphone, Target, PiggyBank, ArrowRight, Check } from 'lucide-react';
+import { Lock, User, Phone, ArrowRight, Loader2, CheckCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 export default function SetupPage() {
     const supabase = createBrowserClient(
@@ -13,186 +14,209 @@ export default function SetupPage() {
     );
     const router = useRouter();
 
-    const [step, setStep] = useState(1);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
-    // Data
-    const [whatsapp, setWhatsapp] = useState('');
-    const [income, setIncome] = useState('');
-    const [goal, setGoal] = useState('');
+    // Form Data
+    const [email, setEmail] = useState("");
+    const [name, setName] = useState("");
+    const [whatsapp, setWhatsapp] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-    // Step 1: Format & Validate Phone
+    // Validation Flags
+    const hasMinLength = password.length >= 6;
+    const isValid = hasMinLength && (password === confirmPassword);
+
+    useEffect(() => {
+        checkSession();
+    }, []);
+
+    const checkSession = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            router.replace('/login');
+            return;
+        }
+
+        setEmail(user.email || "");
+
+        // Try to fetch existing profile data to pre-fill
+        const { data: profile } = await supabase
+            .from('perfis')
+            .select('*')
+            .eq('auth_user_id', user.id)
+            .single();
+
+        if (profile) {
+            setWhatsapp(profile.whatsapp_number || "");
+        }
+
+        // Name comes from Auth Metadata
+        if (user.user_metadata?.full_name) {
+            setName(user.user_metadata.full_name);
+        }
+        setLoading(false);
+    };
+
+    const handleSave = async () => {
+        if (!isValid) return;
+
+        setSaving(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("Usuário não autenticado");
+
+            // 1. Update Password & Metadata
+            const { error: authError } = await supabase.auth.updateUser({
+                password: password,
+                data: { full_name: name } // Also update auth metadata
+            });
+
+            // Ignore error if it's just "password is same"
+            if (authError && !authError.message.includes("different from the old password")) {
+                throw authError;
+            }
+
+            // 2. Upsert Profile Data (Create or Update)
+            const { error: profileError } = await supabase
+                .from('perfis')
+                .upsert({
+                    id: user.id, // Primary Key matches Auth ID
+                    auth_user_id: user.id,
+                    whatsapp_number: whatsapp,
+                    email: email,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: 'id' });
+
+            if (profileError) throw profileError;
+
+            // Success! Redirect to Dashboard
+            router.push('/dashboard');
+
+        } catch (error: any) {
+            alert("Erro ao salvar: " + error.message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const handlePhoneChange = (e: any) => {
-        let value = e.target.value.replace(/\D/g, ""); // Only numbers
-        if (value.length > 11) value = value.slice(0, 11);
+        // Handle both event (Tremor v3?) and direct value (Tremor v4?)
+        // Tremor TextInput onValueChange gives string, onChange gives event.
+        // We used onValueChange={handlePhoneChange} in JSX below.
+        // So 'e' is the string value.
+        const val = typeof e === 'string' ? e : e?.target?.value || '';
 
-        // Mask (00) 00000-0000
-        if (value.length > 2) value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
-        if (value.length > 9) value = `${value.slice(0, 10)}-${value.slice(10)}`;
+        let v = val.replace(/\D/g, "");
+        if (v.length > 11) v = v.slice(0, 11);
 
-        setWhatsapp(value);
+        // Mask logic
+        if (v.length > 2) v = `(${v.slice(0, 2)}) ${v.slice(2)}`;
+        if (v.length > 7) v = `${v.slice(0, 5)}-${v.slice(5)}`; // (XX) XXXXX-XXXX (11 digits) or (XX) XXXX-XXXX (10 digits)
+
+        // Adjustment for 9-digit mobile numbers (standard in Brazil)
+        if (v.length > 14) {
+            // Logic to handle shift from (XX) XXXX-XXXX to (XX) XXXXX-XXXX dynamically is tricky with simple replace.
+            // Let's stick to the simplest visual mask that works for 10 or 11 digits.
+            // Re-masking fully based on length:
+            const clean = val.replace(/\D/g, "").slice(0, 11);
+            if (clean.length > 2) v = `(${clean.slice(0, 2)}) ${clean.slice(2)}`;
+            if (clean.length > 6) v = `(${clean.slice(0, 2)}) ${clean.slice(2, 7)}-${clean.slice(7)}`;
+        }
+
+        setWhatsapp(v);
     };
 
-    const savePhone = async () => {
-        setLoading(true);
-        const cleanPhone = whatsapp.replace(/\D/g, ""); // 55 + DDD + NUM
-        // Assuming Brazil default 55
-        const fullNumber = `55${cleanPhone}`;
-
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return; // Should handle auth error
-
-        const { error } = await supabase
-            .from('perfis')
-            .update({ whatsapp_number: fullNumber })
-            .eq('auth_user_id', user.id);
-
-        setLoading(false);
-        if (!error) setStep(2);
-    };
-
-    // Step 2: Save Goals
-    const saveGoals = async () => {
-        setLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-
-        const { error } = await supabase
-            .from('perfis')
-            .update({
-                monthly_income: parseFloat(income),
-                savings_goal: parseFloat(goal),
-                onboarding_completed: true
-            })
-            .eq('auth_user_id', user!.id);
-
-        setLoading(false);
-        if (!error) setStep(3);
-    };
-
-    // Calculations for feedback
-    const dailyBudget = income && goal ? (parseFloat(income) - parseFloat(goal)) / 30 : 0;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-            <Card className="max-w-md w-full glass-card ring-0 p-8 shadow-2xl relative overflow-hidden">
-                {/* Progress Bar Top */}
-                <div className="absolute top-0 left-0 w-full">
-                    <ProgressBar value={(step / 3) * 100} color="indigo" className="h-1" />
-                </div>
-
+            <Card className="max-w-md w-full glass-card ring-0 p-8 shadow-2xl relative overflow-hidden border-t-4 border-t-indigo-500">
                 <div className="mb-8 text-center">
-                    <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-500/30">
-                        <span className="text-2xl">🐷</span>
+                    <div className="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-4 ring-1 ring-indigo-500/20">
+                        <User className="w-8 h-8 text-indigo-400" />
                     </div>
-                    <Title className="text-white text-2xl">Configuração Inicial</Title>
-                    <Text className="text-slate-400">Vamos personalizar seu assistente.</Text>
+                    <Title className="text-white text-2xl">Bem-vindo(a)!</Title>
+                    <Text className="text-slate-400">Vamos finalizar seu cadastro para acessar o painel.</Text>
                 </div>
 
-                {/* STEP 1: WHATSAPP */}
-                {step === 1 && (
-                    <div className="space-y-6 animate-fadeIn">
-                        <div>
-                            <label className="text-sm font-medium text-slate-300 mb-1 block">Seu WhatsApp</label>
-                            <TextInput
-                                icon={Smartphone}
-                                placeholder="(11) 99999-9999"
-                                value={whatsapp}
-                                onChange={handlePhoneChange}
-                                className="text-lg"
-                            />
-                            <Text className="text-xs text-slate-500 mt-2">Usaremos este número para falar com você.</Text>
-                        </div>
-                        <Button
-                            size="xl"
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 border-none group"
-                            onClick={savePhone}
-                            loading={loading}
-                            disabled={whatsapp.length < 14} // Length of formatted string
-                        >
-                            Continuar <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </Button>
+                <div className="space-y-4">
+                    <div>
+                        <label className="text-xs text-slate-400 font-medium ml-1">Seu E-mail (Confirmado)</label>
+                        <TextInput value={email} disabled className="mt-1 opacity-60" />
                     </div>
-                )}
 
-                {/* STEP 2: FINANCES */}
-                {step === 2 && (
-                    <div className="space-y-6 animate-fadeIn">
-                        <div>
-                            <label className="text-sm font-medium text-slate-300 mb-1 block">Renda Mensal Estimada</label>
-                            <TextInput
-                                icon={Target}
-                                placeholder="R$ 5000.00"
-                                type="number"
-                                value={income}
-                                onValueChange={setIncome}
-                            />
-                        </div>
-                        <div>
-                            <label className="text-sm font-medium text-slate-300 mb-1 block">Meta de Economia</label>
-                            <TextInput
-                                icon={PiggyBank}
-                                placeholder="R$ 1000.00"
-                                type="number"
-                                value={goal}
-                                onValueChange={setGoal}
-                            />
-                        </div>
-
-                        {/* Instant Feedback */}
-                        {Number(income) > Number(goal) && (
-                            <div className="bg-emerald-900/20 border border-emerald-500/20 p-4 rounded-lg">
-                                <Text className="text-emerald-400 text-sm">Boa escolha! Sobrará para gastar:</Text>
-                                <Metric className="text-emerald-300 mt-1">
-                                    R$ {(parseFloat(income) - parseFloat(goal)).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                                </Metric>
-                                <Text className="text-emerald-500/60 text-xs mt-1">
-                                    ~ R$ {dailyBudget.toLocaleString('pt-BR', { maximumFractionDigits: 0 })} por dia.
-                                </Text>
-                            </div>
-                        )}
-
-                        <Button
-                            size="xl"
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 border-none"
-                            onClick={saveGoals}
-                            loading={loading}
-                            disabled={!income || !goal}
-                        >
-                            Finalizar Setup
-                        </Button>
+                    <div>
+                        <label className="text-xs text-slate-400 font-medium ml-1">Nome Completo</label>
+                        <TextInput
+                            value={name}
+                            onValueChange={setName}
+                            placeholder="Como quer ser chamado?"
+                            icon={User}
+                            className="mt-1"
+                        />
                     </div>
-                )}
 
-                {/* STEP 3: HANDSHAKE */}
-                {step === 3 && (
-                    <div className="text-center space-y-6 animate-fadeIn">
-                        <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto text-emerald-400">
-                            <Check size={32} />
-                        </div>
-                        <div>
-                            <Title className="text-white">Tudo Pronto!</Title>
-                            <Text className="text-slate-400 mt-2">Seu assistente já sabe suas metas.</Text>
-                        </div>
-
-                        <a
-                            href={`https://wa.me/${whatsapp.replace(/\D/g, "") ? "55" + whatsapp.replace(/\D/g, "") : ""}?text=Olá! Quero começar a economizar com o Me Poupey.`}
-                            target="_blank"
-                            className="block"
-                        >
-                            <Button size="xl" color="emerald" className="w-full" icon={Smartphone}>
-                                Chamar no WhatsApp
-                            </Button>
-                        </a>
-
-                        <Button
-                            variant="secondary"
-                            className="w-full mt-2"
-                            onClick={() => router.push('/dashboard')}
-                        >
-                            Ir para Dashboard
-                        </Button>
+                    <div>
+                        <label className="text-xs text-slate-400 font-medium ml-1">WhatsApp</label>
+                        <TextInput
+                            value={whatsapp}
+                            onValueChange={handlePhoneChange}
+                            placeholder="(xx) xxxxx-xxxx"
+                            icon={Phone}
+                            className="mt-1"
+                        />
                     </div>
-                )}
+
+                    <div className="pt-4 border-t border-white/10">
+                        <label className="text-xs text-slate-400 font-medium ml-1">Defina sua Senha</label>
+                        <TextInput
+                            type="password"
+                            value={password}
+                            onValueChange={setPassword}
+                            placeholder="Mínimo 6 caracteres"
+                            icon={Lock}
+                            className="mt-1"
+                        />
+                        {/* Microcopy Rules */}
+                        <div className="flex gap-2 mt-2 text-[10px] text-slate-500">
+                            <span className={hasMinLength ? "text-emerald-400" : ""}>• Mín. 6 caracteres</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label className="text-xs text-slate-400 font-medium ml-1">Confirme a Senha</label>
+                        <TextInput
+                            type="password"
+                            value={confirmPassword}
+                            onValueChange={setConfirmPassword}
+                            placeholder="Repita a senha"
+                            icon={Lock}
+                            className="mt-1"
+                            error={!!(confirmPassword && password !== confirmPassword)}
+                            errorMessage="As senhas não coincidem"
+                        />
+                    </div>
+
+                    <Button
+                        size="xl"
+                        className="w-full mt-4 bg-indigo-600 hover:bg-indigo-700 border-none group"
+                        loading={saving}
+                        onClick={handleSave}
+                        disabled={!isValid || !name || !whatsapp}
+                    >
+                        <span className="flex items-center gap-2">
+                            Ativar Conta e Entrar
+                            {!saving && <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />}
+                        </span>
+                    </Button>
+                </div>
             </Card>
         </div>
     );

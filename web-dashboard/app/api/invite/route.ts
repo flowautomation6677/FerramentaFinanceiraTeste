@@ -1,6 +1,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
+import { sendInviteEmail } from '@/lib/email'
 
 // Initialize Supabase Admin (Service Role)
 // We need this to bypass RLS and use adminAuth functions
@@ -24,34 +25,45 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Email is required' }, { status: 400 })
         }
 
-        // Invite User via Supabase Auth
-        // Use 'redirectTo' to point to your setup page if needed
+        // 1. Generate Invite Link (Do NOT send email via Supabase)
         const { origin } = new URL(request.url);
-        const { data, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
-            redirectTo: `${origin}/auth/callback?next=/update-password`
+
+        const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+            type: 'invite',
+            email: email,
+            options: {
+                redirectTo: `${origin}/auth/finish?next=/setup`,
+                data: { full_name: name }
+            }
         });
 
         if (error) {
-            console.error('Error inviting user:', error)
+            console.error('Error generating invite link:', error)
             return NextResponse.json({ error: error.message }, { status: 500 })
         }
 
-        // Profile Pre-provisioning
+        // 2. Send Custom Email via Resend
+        if (data && data.properties && data.properties.action_link) {
+            await sendInviteEmail(email, data.properties.action_link);
+        }
+
+        // 3. Profile Pre-provisioning
         // Insert/Update profile with Name and Phone immediately
         if (data.user) {
             const updates: any = {
                 updated_at: new Date().toISOString()
             };
-            if (name) updates.name = name;
+            // Name is stored in metadata now
             if (whatsapp) updates.whatsapp_number = whatsapp;
 
-            // We upsert because the trigger handle_new_user might have run already or not
-            // Actually handle_new_user runs on INSERT into auth.users, so row should exist.
-            // We use update.
             const { error: profileError } = await supabaseAdmin
                 .from('perfis')
-                .update(updates)
-                .eq('id', data.user.id);
+                .upsert({
+                    id: data.user.id,
+                    auth_user_id: data.user.id,
+                    email: email,
+                    ...updates
+                }, { onConflict: 'id' });
 
             if (profileError) {
                 console.warn("⚠️ User invited but profile update failed:", profileError);

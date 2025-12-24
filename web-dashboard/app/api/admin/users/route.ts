@@ -73,19 +73,27 @@ export async function DELETE(request: Request) {
 
         if (!userId) return NextResponse.json({ error: 'Missing User ID' }, { status: 400 });
 
-        // Delete from Auth (This usually cascades to public table if configured, but let's be safe)
-        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
-        if (authError) throw authError;
+        if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+            console.error("❌ Erro CRÍTICO: SUPABASE_SERVICE_ROLE_KEY não definida.");
+            return NextResponse.json({ error: 'Configuração de Servidor incompleta (Sem Key de Admin).' }, { status: 500 });
+        }
 
-        // Optionally ensure profile is gone (if no cascade)
+        // 1. Delete Profile first (to avoid FK constraints if no CASCADE)
         const { error: dbError } = await supabaseAdmin
             .from('perfis')
             .delete()
             .eq('id', userId);
 
-        // Ignore dbError if it's just "row not found" (already cascaded)
-        // But for safety in this specific setup, we just log it if it fails for other reasons
-        if (dbError) console.warn("Profile delete warning:", dbError);
+        if (dbError) {
+            console.warn("Profile delete warning:", dbError);
+            // If profile delete fails (e.g. other dependencies), we might want to stop or proceed?
+            // Usually best to throw if we want strict consistency, but let's try to proceed to auth delete
+            // unless it's a constraint error.
+        }
+
+        // 2. Delete from Auth
+        const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+        if (authError) throw authError;
 
         return NextResponse.json({ success: true });
 

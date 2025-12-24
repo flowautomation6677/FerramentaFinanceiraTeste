@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { AlertCircle } from "lucide-react";
 
-export default function AuthErrorPage({ searchParams }: { searchParams: { error?: string, error_description?: string } }) {
+export default async function AuthErrorPage({ searchParams }: { searchParams: Promise<{ error?: string, error_description?: string }> }) {
+    const params = await searchParams;
     // If running in development, generic messages are less helpful.
-    const errorMsg = searchParams?.error_description
-        ? decodeURIComponent(searchParams.error_description.replace(/\+/g, " "))
+    const errorMsg = params?.error_description
+        ? decodeURIComponent(params.error_description.replace(/\+/g, " "))
         : "Ocorreu um erro ao validar seu acesso. Isso pode acontecer se o link já foi usado ou expirou.";
 
     return (
