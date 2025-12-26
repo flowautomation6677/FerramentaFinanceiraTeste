@@ -101,38 +101,42 @@ class EvolutionAdapter {
      * if not readily available, prompting user to configure Evolution correctly.
      */
     async downloadMedia() {
-        // Check if raw message has mediaKey or direct base64
-        // Evolution API V2 Webhook Message Upsert usually DOES NOT send base64 by default for performance.
-        // However, we can use the message ID to fetch it if needed, OR relies on the fact existing logic expects it.
+        // Log for debugging
+        // logger.debug("⬇️ Adapter: downloadMedia called");
 
-        // Hack: For now, return a placeholder or implement fetching if ID exists.
-        // But for better performance, let's assume valid base64 is passed OR fetch it.
-
-        // NOTE: Configuring Evolution to send base64 in webhook is possible but heavy.
-        // Better approach: Use Evolution API 'findMessage' or specific media retrieval endpoint.
-
-        // As a robust solution, we simply return the object structure expected by existing logic
-        // { data: "base64...", mimetype: "...", filename: "..." }
-
-        // Since we are inside the adapter, we can try to fetch it from Evolution API if not present.
-        // But `evolutionService` doesn't have `getMedia` implemented yet.
-
-        // Lets assume for the MVP that existing logic checks `message.hasMedia`.
-        // If true, it calls downloadMedia.
-
-        logger.warn("⚠️ downloadMedia called in Adapter. Ensure Evolution Webhook sends Base64 or implement fetch.");
-
-        // If Evolution V2 sends base64 in `base64` field of the message part:
         const msgContent = this.rawMessage[this.messageType];
-        if (msgContent && msgContent.jpegThumbnail) {
-            // This is just a thumbnail.
+
+        if (!msgContent) {
+            console.error("❌ No message content found for type:", this.messageType);
+            return undefined;
         }
 
-        // To make this work robustly without heavy webhook payloads:
-        // We really should implement a "Get Message Base64" in EvolutionService.
-        // For now, I will throw a friendly error if not found, or try to return what we have.
+        // 1. Try to find direct Base64 in payload (Evolution option 'includeBase64')
+        // Field names might vary: 'media', 'base64', 'file' or just the buffer.
+        // For our test simulation, we will inject 'base64' property directly in the mock.
+        let base64 = msgContent.base64 || msgContent.file;
 
-        return undefined; // Will trigger error in handler if not implemented.
+        // 2. Identify MimeType
+        let mimetype = msgContent.mimetype || 'application/octet-stream';
+
+        // 3. Identify Filename (or generate one)
+        let filename = msgContent.fileName || 'file';
+        if (this.type === 'image') filename = 'image.jpg';
+        if (this.type === 'audio' || this.type === 'ptt') filename = 'audio.ogg';
+
+        // If we have base64, return the object expected by MessageHandler
+        if (base64) {
+            return {
+                data: base64,
+                mimetype: mimetype,
+                filename: filename
+            };
+        }
+
+        // If no base64, normally we would fetch from Evolution API using ID.
+        // For now, we return null to indicate failure or missing configuration.
+        console.warn("⚠️ No Base64 found in payload. Ensure Evolution is sending it or implement fetch.");
+        return undefined;
     }
 }
 

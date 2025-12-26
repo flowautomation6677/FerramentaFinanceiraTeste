@@ -28,18 +28,14 @@ class EvolutionService {
      */
     async sendText(to, text, instanceName) {
         try {
-            const targetInstance = instanceName || this.instanceName;
+            const targetInstance = encodeURIComponent(instanceName || this.instanceName);
             const url = `/message/sendText/${targetInstance}`;
             const body = {
                 number: to,
-                options: {
-                    delay: 1200,
-                    presence: 'composing',
-                    linkPreview: false
-                },
-                textMessage: {
-                    text: text
-                }
+                text: text,
+                delay: 1200,
+                linkPreview: false,
+                presence: 'composing'
             };
 
             const response = await this.client.post(url, body);
@@ -59,7 +55,7 @@ class EvolutionService {
      */
     async sendMedia(to, media, type = 'document', instanceName) {
         try {
-            const targetInstance = instanceName || this.instanceName;
+            const targetInstance = encodeURIComponent(instanceName || this.instanceName);
             const url = `/message/sendMedia/${targetInstance}`;
 
             const body = {
@@ -90,7 +86,8 @@ class EvolutionService {
      */
     async setWebhook(webhookUrl) {
         try {
-            const url = `/webhook/set/${this.instanceName}`;
+            const encodedInstance = encodeURIComponent(this.instanceName);
+            const url = `/webhook/set/${encodedInstance}`;
             const body = {
                 webhookUrl: webhookUrl,
                 webhookByEvents: true,
@@ -113,7 +110,8 @@ class EvolutionService {
      */
     async checkConnection() {
         try {
-            const url = `/instance/connectionState/${this.instanceName}`;
+            const encodedInstance = encodeURIComponent(this.instanceName);
+            const url = `/instance/connectionState/${encodedInstance}`;
             const response = await this.client.get(url);
             return response.data?.instance?.state === 'open';
         } catch (error) {

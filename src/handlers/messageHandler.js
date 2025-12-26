@@ -361,6 +361,7 @@ async function handleMessage(message) {
         }
 
     } catch (err) {
+        console.error("DEBUG STACK:", err.stack); // Added for debugging
         logger.error("❌ Controller Error", { error: err, stack: err.stack });
     }
 }
