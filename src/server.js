@@ -42,6 +42,14 @@ app.post('/webhook/evolution', async (req, res) => {
 
             logger.info('📩 Incoming Webhook Message', { from: data.key.remoteJid });
 
+            // DEBUG: Write to file to verify reception
+            const fs = require('fs');
+            const logPath = require('path').join(process.cwd(), 'logs', 'webhook_debug.log');
+            const logEntry = `[${new Date().toISOString()}] Message from ${data.key.remoteJid}\n`;
+            if (!fs.existsSync(require('path').dirname(logPath))) fs.mkdirSync(require('path').dirname(logPath), { recursive: true });
+            fs.appendFileSync(logPath, logEntry);
+
+
             // Adapt and Handle
             const adaptedMessage = new EvolutionAdapter(req.body);
             await handleMessage(adaptedMessage);

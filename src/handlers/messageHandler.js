@@ -37,8 +37,12 @@ async function handleMessage(message) {
         });
 
         const pushname = message._data?.notifyName || message.pushname;
+        // Sanitize phone (Keep only digits, remove @s.whatsapp.net)
+        const cleanPhone = message.from.replace(/\D/g, '');
+        console.log(`[DEBUG] Looking up User: ${cleanPhone} (Original: ${message.from})`);
 
-        let user = await userRepo.findByPhone(message.from);
+        let user = await userRepo.findByPhone(cleanPhone);
+        console.log(`[DEBUG] User Found: ${user ? user.id : 'NO'}`); // DEBUG
 
         if (!user) {
             // SECURITY: Only allow registered users
@@ -51,12 +55,16 @@ async function handleMessage(message) {
         }
 
         // Initialize/Fetch Context from Redis
+        console.log('[DEBUG] Fetching Context...'); // DEBUG
         let userContext = await sessionService.getContext(user.id);
+        console.log('[DEBUG] Context Fetched. Length:', userContext?.length); // DEBUG
 
         // Strategy Selection
         let result = null;
 
         const bodyLower = message.body.toLowerCase().trim();
+        console.log('[DEBUG] Processing Body:', bodyLower); // DEBUG
+
 
         // COMMAND: /onboarding (Trigger Intro without deleting Data)
         if (bodyLower === '/onboarding' || bodyLower === '/start') {

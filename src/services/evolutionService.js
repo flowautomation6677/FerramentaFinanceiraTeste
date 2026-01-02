@@ -5,7 +5,7 @@ class EvolutionService {
     constructor() {
         this.baseUrl = process.env.EVOLUTION_API_URL || 'http://localhost:8080';
         this.apiKey = process.env.EVOLUTION_API_KEY;
-        this.instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'FinanceBot';
+        this.instanceName = process.env.EVOLUTION_INSTANCE_NAME || 'FinanceBot_v3';
 
         if (!this.apiKey) {
             logger.error('❌ EVOLUTION_API_KEY is missing in .env');

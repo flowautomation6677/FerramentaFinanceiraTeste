@@ -12,6 +12,7 @@ class EvolutionAdapter {
         this.key = webhookData.data?.key || {};
         this.messageType = webhookData.data?.messageType || 'conversation';
         this.timestamp = webhookData.data?.messageTimestamp;
+        this.pushname = webhookData.data?.pushName; // Map pushName
 
         // Capture Instance Name to reply correctly
         this.instanceName = webhookData.instance;
