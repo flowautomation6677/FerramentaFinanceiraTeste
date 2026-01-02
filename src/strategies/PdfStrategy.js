@@ -1,5 +1,3 @@
-// Usando a build ES5 do pdfjs-dist (v2) para compatibilidade CommonJS
-const pdfjsLib = require('pdfjs-dist');
 const { analyzePdfText } = require('../services/openaiService');
 
 class PdfStrategy {
@@ -12,6 +10,9 @@ class PdfStrategy {
      */
     async processPdf(buffer, password) {
         try {
+            // Dynamic Import for ESM compatibility (pdfjs-dist v5+)
+            const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
+
             // Convertendo Buffer para Uint8Array (formato esperado pelo PDF.js)
             const data = new Uint8Array(buffer);
 

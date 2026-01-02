@@ -204,6 +204,16 @@ async function handleMessage(message) {
         // Safeguard: Ignore 'chat' type even if hasMedia is true (prevents bugs)
         if (message.hasMedia && message.type !== 'chat') {
 
+            // 1. Memory Protection: Check file size header before download
+            // Note: whatsapp-web.js exposes 'size' (in bytes) on message._data
+            const MAX_SIZE_BYTES = 15 * 1024 * 1024; // 15MB
+            const fileSize = message._data?.size || 0;
+
+            if (fileSize > MAX_SIZE_BYTES) {
+                logger.warn('🚫 Media too large', { userId: user.id, size: fileSize });
+                return message.reply("⚠️ Arquivo muito grande! Por favor, envie arquivos menores que 15MB.");
+            }
+
             const media = await message.downloadMedia();
             if (!media) {
                 logger.warn('Failed to download media', { userId: user.id, messageId: message.id._serialized });
