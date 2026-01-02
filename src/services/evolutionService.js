@@ -118,6 +118,28 @@ class EvolutionService {
             return false;
         }
     }
+    /**
+     * Get Base64 from Media Message
+     * @param {object} messageObject - The full message object from the webhook
+     * @param {string} [instanceName]
+     */
+    async getBase64FromMedia(messageObject, instanceName) {
+        try {
+            const targetInstance = encodeURIComponent(instanceName || this.instanceName);
+            const url = `/chat/getBase64FromMediaMessage/${targetInstance}`;
+
+            const body = {
+                message: messageObject,
+                convertToMp4: false
+            };
+
+            const response = await this.client.post(url, body);
+            return response.data?.base64;
+        } catch (error) {
+            logger.error('❌ Error fetching base64 from Evolution API', { error: error.message });
+            return null;
+        }
+    }
 }
 
 module.exports = new EvolutionService();

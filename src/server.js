@@ -24,12 +24,14 @@ app.get('/health', (req, res) => {
 app.post('/webhook/evolution', async (req, res) => {
     try {
         const eventType = req.body.event;
+        console.log("📥 WEBHOOK PAYLOAD RECEBIDO [v2]:", JSON.stringify(req.body, null, 2));
+        console.log(`[DEBUG] Check Event Type: "${eventType}" | Upper: "${eventType?.toUpperCase()}"`);
         const instance = req.body.instance;
 
         // Log incoming event (Debug)
         // logger.debug(`Webhook Event: ${eventType} from ${instance}`);
 
-        if (eventType === 'MESSAGES_UPSERT') {
+        if (eventType.toUpperCase() === 'MESSAGES.UPSERT') {
             const data = req.body.data;
 
             // Evolution v2 sends messages in an array? Usually singular for webhook unless configured otherwise

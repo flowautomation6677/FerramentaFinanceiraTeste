@@ -23,6 +23,14 @@ class EvolutionAdapter {
         // Receiver ID (My Number)
         this.to = webhookData.sender; // Depends on Evolution payload structure
 
+        // Construct ID object (whatsapp-web.js compatibility)
+        this.id = {
+            id: this.key.id,
+            remote: this.key.remoteJid,
+            fromMe: this.key.fromMe,
+            _serialized: `${this.key.fromMe}_${this.key.remoteJid}_${this.key.id}`
+        };
+
         // Extract Body/Content
         this.body = this.extractBody();
 
@@ -102,42 +110,62 @@ class EvolutionAdapter {
      * if not readily available, prompting user to configure Evolution correctly.
      */
     async downloadMedia() {
-        // Log for debugging
-        // logger.debug("⬇️ Adapter: downloadMedia called");
+        try {
+            console.log(`[DEBUG] Adapter: downloadMedia called. Type: ${this.type}, MsgType: ${this.messageType}`);
+            // console.log(`[DEBUG] Raw Message Keys: ${Object.keys(this.rawMessage)}`);
 
-        const msgContent = this.rawMessage[this.messageType];
+            const msgContent = this.rawMessage[this.messageType];
 
-        if (!msgContent) {
-            console.error("❌ No message content found for type:", this.messageType);
+            if (!msgContent) {
+                console.error("❌ No message content found for type:", this.messageType);
+                return undefined;
+            }
+
+            // 1. Try to find direct Base64 in payload (Evolution option 'includeBase64')
+            let base64 = msgContent.base64 || msgContent.file;
+
+            // 2. Identify MimeType
+            let mimetype = msgContent.mimetype || 'application/octet-stream';
+
+            // 3. Identify Filename (or generate one)
+            let filename = msgContent.fileName || 'file';
+            if (this.type === 'image') filename = 'image.jpg';
+            if (this.type === 'audio' || this.type === 'ptt') filename = 'audio.ogg';
+            if (this.type === 'document' && !filename) filename = 'document.pdf';
+
+            // If we have base64, return the object expected by MessageHandler
+            if (base64) {
+                console.log(`[DEBUG] Base64 found! Length: ${base64.length}`);
+                return {
+                    data: base64,
+                    mimetype: mimetype,
+                    filename: filename
+                };
+            }
+
+            // If no base64, normally we would fetch from Evolution API using ID.
+            if (!base64) {
+                console.log("[DEBUG] Fetching Base64 from API...");
+                // Fix: Pass full WAMessage object (this.data.data) not just content
+                base64 = await evolutionService.getBase64FromMedia(this.data.data, this.instanceName);
+            }
+
+            if (base64) {
+                console.log(`[DEBUG] Base64 found/fetched! Length: ${base64.length}`);
+                return {
+                    data: base64,
+                    mimetype: mimetype,
+                    filename: filename
+                };
+            }
+
+            console.warn("⚠️ No Base64 found in payload or API.");
+            return undefined;
+
+        } catch (error) {
+            console.error("❌ Error in downloadMedia:", error);
             return undefined;
         }
-
-        // 1. Try to find direct Base64 in payload (Evolution option 'includeBase64')
-        // Field names might vary: 'media', 'base64', 'file' or just the buffer.
-        // For our test simulation, we will inject 'base64' property directly in the mock.
-        let base64 = msgContent.base64 || msgContent.file;
-
-        // 2. Identify MimeType
-        let mimetype = msgContent.mimetype || 'application/octet-stream';
-
-        // 3. Identify Filename (or generate one)
-        let filename = msgContent.fileName || 'file';
-        if (this.type === 'image') filename = 'image.jpg';
-        if (this.type === 'audio' || this.type === 'ptt') filename = 'audio.ogg';
-
-        // If we have base64, return the object expected by MessageHandler
-        if (base64) {
-            return {
-                data: base64,
-                mimetype: mimetype,
-                filename: filename
-            };
-        }
-
-        // If no base64, normally we would fetch from Evolution API using ID.
-        // For now, we return null to indicate failure or missing configuration.
-        console.warn("⚠️ No Base64 found in payload. Ensure Evolution is sending it or implement fetch.");
-        return undefined;
     }
 }
 
