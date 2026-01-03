@@ -1,18 +1,16 @@
 // Mock das dependências
 jest.mock('../../src/services/queueService');
 
-const MediaHandler = require('../../src/handlers/MediaHandler');
 const queueService = require('../../src/services/queueService');
+// Import do handler singleton
+const MediaHandler = require('../../src/handlers/MediaHandler');
 
-describe('MediaHandler - handle() Integration Tests', () => {
-    let handler;
+describe('MediaHandler - Integration Tests', () => {
     let mockMessage;
     let mockUser;
 
     beforeEach(() => {
         jest.clearAllMocks();
-
-        handler = new MediaHandler();
 
         mockUser = {
             id: 'user-test-456',
@@ -40,7 +38,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 reply: jest.fn()
             };
 
-            const result = await handler.handle(mockMessage, mockUser);
+            const result = await MediaMediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(result).toBe(true);
             expect(queueService.addJob).toHaveBeenCalledWith(
@@ -69,7 +67,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 reply: jest.fn()
             };
 
-            await handler.handle(mockMessage, mockUser);
+            await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(queueService.addJob).toHaveBeenCalledWith(
                 'PROCESS_AUDIO',
@@ -90,7 +88,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 reply: jest.fn()
             };
 
-            await handler.handle(mockMessage, mockUser);
+            await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(queueService.addJob).toHaveBeenCalledWith(
                 'PROCESS_AUDIO',
@@ -114,7 +112,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 body: ''
             };
 
-            await handler.handle(mockMessage, mockUser);
+            await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(queueService.addJob).toHaveBeenCalledWith(
                 'PROCESS_PDF',
@@ -136,7 +134,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 body: ''
             };
 
-            await handler.handle(mockMessage, mockUser);
+            await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(queueService.addJob).toHaveBeenCalledWith(
                 'PROCESS_OFX',
@@ -158,7 +156,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 body: ''
             };
 
-            await handler.handle(mockMessage, mockUser);
+            await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(queueService.addJob).toHaveBeenCalledWith(
                 'PROCESS_CSV',
@@ -180,7 +178,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 body: ''
             };
 
-            await handler.handle(mockMessage, mockUser);
+            await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(queueService.addJob).toHaveBeenCalledWith(
                 'PROCESS_XLSX',
@@ -199,7 +197,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 body: ''
             };
 
-            const result = await handler.handle(mockMessage, mockUser);
+            const result = await MediaMediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(result).toBe(true);
             expect(mockMessage.reply).toHaveBeenCalledWith(
@@ -219,7 +217,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 reply: jest.fn()
             };
 
-            await handler.handle(mockMessage, mockUser);
+            await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(mockMessage.reply).toHaveBeenCalledWith(
                 expect.stringContaining('Não consegui baixar')
@@ -236,7 +234,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 reply: jest.fn()
             };
 
-            await handler.handle(mockMessage, mockUser);
+            await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(mockMessage.reply).toHaveBeenCalledWith(
                 expect.stringContaining('erro')
@@ -253,7 +251,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 reply: jest.fn()
             };
 
-            const result = await handler.handle(mockMessage, mockUser);
+            const result = await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(result).toBe(false);
             expect(queueService.addJob).not.toHaveBeenCalled();
@@ -273,7 +271,7 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 body: ''
             };
 
-            const result = await handler.handle(mockMessage, mockUser);
+            const result = await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(result).toBe(false);
             expect(queueService.addJob).not.toHaveBeenCalled();
@@ -288,9 +286,11 @@ describe('MediaHandler - handle() Integration Tests', () => {
                 reply: jest.fn()
             };
 
-            const result = await handler.handle(mockMessage, mockUser);
+            const result = await MediaHandler.MediaHandler.handle(mockMessage, mockUser);
 
             expect(result).toBe(false);
         });
     });
 });
+
+
