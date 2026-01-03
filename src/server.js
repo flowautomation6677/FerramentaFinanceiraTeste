@@ -8,6 +8,9 @@ const evolutionService = require('./services/evolutionService');
 const app = express();
 const PORT = process.env.PORT || 4001; // Railway requires process.env.PORT
 
+// 🛡️ Security: Disable fingerprinting (SonarQube)
+app.disable('x-powered-by');
+
 // Limit reduced to 20mb to mitigate DoS risks while allowing WhatsApp video uploads.
 app.use(bodyParser.json({ limit: '20mb' }));
 app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));

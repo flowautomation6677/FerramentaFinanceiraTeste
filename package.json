@@ -7,7 +7,8 @@
     "start": "node index.js",
     "dashboard": "cd web-dashboard && npm run dev",
     "dev": "concurrently \"npm start\" \"npm run dashboard\"",
-    "test": "jest"
+    "test": "jest",
+    "sonar": "node sonar-project.js"
   },
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
@@ -41,6 +42,7 @@
     "concurrently": "^9.2.1",
     "eslint": "^9.39.2",
     "globals": "^17.0.0",
-    "jest": "^30.2.0"
+    "jest": "^30.2.0",
+    "sonarqube-scanner": "^4.3.2"
   }
 }

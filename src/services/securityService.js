@@ -63,7 +63,9 @@ class SecurityService {
 
         // 4. Remove common banking disclaimer footers (Heuristic)
         // "Ouvidoria: 0800...", "SAC...", "Transação sujeita a..."
-        clean = clean.replace(/(Ouvidoria|SAC|Atendimento).*?[\d-]{8,}/gi, '');
+        // Limit lookahead to 200 chars that are NOT digits AND NOT hyphens.
+        // This prevents ReDoS because the gap group [^0-9-] cannot physically match the start of the target group [\d-].
+        clean = clean.replace(/(?:Ouvidoria|SAC|Atendimento)[^0-9-]{0,200}?[\d-]{8,}/gi, '');
 
         return clean.trim();
     }

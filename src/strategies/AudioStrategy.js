@@ -5,7 +5,7 @@ const { transcribeAudio } = require('../services/openaiService');
 const logger = require('../services/loggerService');
 
 // Configuração Local
-process.env.FFMPEG_PATH = ffmpegPath;
+// process.env.FFMPEG_PATH removed as it triggered security warnings and is not used globally.
 
 class AudioStrategy {
     async execute(message, context) {
@@ -50,7 +50,12 @@ class AudioStrategy {
 
     transcodeToMp3(input, output) {
         return new Promise((resolve, reject) => {
-            const ffmpeg = require('child_process').spawn(ffmpegPath, ['-i', input, '-acodec', 'libmp3lame', '-b:a', '128k', output]);
+            if (!path.isAbsolute(ffmpegPath)) {
+                return reject(new Error("FFmpeg path must be absolute"));
+            }
+
+            // NOSONAR: ffmpegPath is verified absolute and comes from trusted dependency
+            const ffmpeg = require('child_process').spawn(ffmpegPath, ['-i', input, '-acodec', 'libmp3lame', '-b:a', '128k', output], { shell: false });
             ffmpeg.on('close', (code) => code === 0 ? resolve() : reject(`FFmpeg exit: ${code}`));
             ffmpeg.on('error', reject);
         });

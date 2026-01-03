@@ -172,7 +172,7 @@ class TextStrategy {
         };
 
         // SHADOW PROMPTING: 50/50 Split
-        const promptVersion = Math.random() < 0.5 ? 'v1_stable' : 'v2_experimental';
+        const promptVersion = Math.random() < 0.5 ? 'v1_stable' : 'v2_experimental'; // NOSONAR
         const systemPrompt = PROMPTS[promptVersion];
 
         // Inject prompt version info into v1 as well for consistency, or handle via merging

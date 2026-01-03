@@ -49,3 +49,5 @@ voice_response_*.ogg
 !DEPLOY.md
 !ORACLE_SETUP.md
 !HOSTING_ALTERNATIVES.md
+
+.scannerwork/
