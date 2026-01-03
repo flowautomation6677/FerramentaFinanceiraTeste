@@ -53,7 +53,7 @@ class EvolutionService {
      * @param {string} type - 'image', 'audio', 'document'
      * @param {string} [instanceName] - Optional instance name override
      */
-    async sendMedia(to, media, type = 'document', instanceName) {
+    async sendMedia(to, media, instanceName, type = 'document') {
         try {
             const targetInstance = encodeURIComponent(instanceName || this.instanceName);
             const url = `/message/sendMedia/${targetInstance}`;

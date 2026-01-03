@@ -137,7 +137,8 @@ async function processExtractedData(content, userId, replyCallback) {
 
     const embeddings = await transactionEmbeddingService.generateForTransactions(validItems);
 
-    const payloadDetails = _generatePayload(validItems, embeddings, userId, data); // { payload, status, confidenceScore }
+    const payloadDetails = _generatePayload(validItems, embeddings, userId, data);
+
 
     const savedTxs = await transactionRepo.createMany(payloadDetails.payload);
 
