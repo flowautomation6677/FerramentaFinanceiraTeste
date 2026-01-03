@@ -52,9 +52,10 @@ class ReportService {
             // 4. Criar PDF
             const pdfDoc = await PDFDocument.create();
             const page = pdfDoc.addPage();
-            const { width, height } = page.getSize();
+            const { height } = page.getSize();
             const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
             const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
 
             const fontSize = 12;
             let y = height - 50;

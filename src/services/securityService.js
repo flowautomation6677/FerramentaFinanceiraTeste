@@ -26,8 +26,9 @@ class SecurityService {
         // Mas o user pediu "Dados sensíveis". Vamos mascarar por segurança.
         sanitized = sanitized.replace(/(?:\b\d{2}\.?\d{3}\.?\d{3}\/?\d{4}-?\d{2}\b)/g, '[CNPJ]');
 
-        // Emails
-        sanitized = sanitized.replace(/[\w.-]+@[\w.-]+\.\w+/g, '[EMAIL]');
+        // Emails - Regex segura para evitar ReDoS
+        // Limita cada parte do email para evitar backtracking excessivo
+        sanitized = sanitized.replace(/\b[\w.-]{1,64}@[\w.-]{1,255}\.[a-zA-Z]{2,10}\b/g, '[EMAIL]');
 
         // Telefones (Cell/Landline Brazil) - (xx) xxxxx-xxxx
         sanitized = sanitized.replace(/(?:\(?\d{2}\)?\s?)?(?:9\d{4}|\d{4})-?\d{4}\b/g, '[PHONE]');

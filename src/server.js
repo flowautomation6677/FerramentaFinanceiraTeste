@@ -47,10 +47,10 @@ app.post('/webhook/evolution', async (req, res) => {
             fullBody: req.body,
             eventTypeCheck: eventType?.toUpperCase()
         });
-        const instance = req.body.instance;
 
         // Log incoming event (Debug)
         // logger.debug(`Webhook Event: ${eventType} from ${instance}`);
+
 
         if (eventType.toUpperCase() === 'MESSAGES.UPSERT') {
             const data = req.body.data;
