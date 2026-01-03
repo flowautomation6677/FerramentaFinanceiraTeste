@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ZAP Scan
-        uses: zaproxy/action-baseline@v0.11.0
+        uses: zaproxy/action-baseline@a9a2caf103181f67a06fad3f0d4f5fe8562016b2 # v0.11.0
         with:
           # Target URL to scan (Update this with your staging/production URL)
           # For now, we assume a placeholder or localhost if using a service container
