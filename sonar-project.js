@@ -1,4 +1,5 @@
 const sonarqubeScanner = require('sonarqube-scanner');
+require('dotenv').config();
 
 // Handle module export differences (CJS vs ESM interop)
 // If require returns an object with 'default', use that. Otherwise use the object itself.
@@ -9,9 +10,9 @@ const scanner = sonarqubeScanner.default || sonarqubeScanner;
 scanner(
     {
         serverUrl: 'http://localhost:9000',
-        token: "sqp_16d0b23737eca29776a686f3f6f5688e7130a0fa",
+        token: process.env.SONAR_TOKEN,
         options: {
-            'sonar.login': "sqp_16d0b23737eca29776a686f3f6f5688e7130a0fa",
+            'sonar.login': process.env.SONAR_TOKEN,
             'sonar.projectKey': 'ferramenta-financeira-teste',
             'sonar.projectName': 'Ferramenta Financeira',
             'sonar.projectVersion': '1.0.0',
