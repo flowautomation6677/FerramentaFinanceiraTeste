@@ -29,8 +29,8 @@ async function _handleHITL(processingResult, validationData, content, user, mess
             transactionIds: txs.map(t => t.id)
         });
 
-        const confirmText = `Fiquei na dúvida sobre esse gasto. 🤔\n\n` +
-            `Entendi: *${mainTx.descricao}* - *R$ ${mainTx.valor.toFixed(2)}*\n\n` +
+        const confirmText = `Fiquei na dúvida sobre esse gasto. 🤔\\n\\n` +
+            `Entendi: *${mainTx.descricao}* - *R$ ${mainTx.valor.toFixed(2)}*\\n\\n` +
             `Confirma? (Sim/Não)`;
         await message.reply(confirmText);
         return true; // HITL triggered
@@ -56,64 +56,99 @@ async function _processTransactionData(validation, user, message, content, respo
 // --- Main Handler ---
 
 class AiConversationHandler {
-    async handle(message, user, userContext) {
-        // Default to text execution
-        const content = message.body;
+    // Extracted Method 1: Handle Media Response
+    async _handleMediaResponse(response, message) {
+        const { mimetype, data, filename, caption } = response.content;
+        const media = { mimetype, data, filename };
+        await message.reply(media, undefined, { caption });
+    }
 
-        // Step 1: Execute Text Strategy
+    // Extracted Method 2: Handle Validation Failure
+    async _handleValidationFailure(validation, jsonStr, message, text) {
+        const isTransactionAttempt = jsonStr.includes('"gastos"') || jsonStr.includes('"transacoes"');
+
+        if (isTransactionAttempt) {
+            logger.warn("Falha de Validação Zod", {
+                errors: validation.error.format(),
+                input: text
+            });
+            await message.reply("😵‍💫 Fiquei confuso com os dados. Poderia repetir de forma mais clara?");
+        } else {
+            await message.reply(text);
+        }
+    }
+
+    // Extracted Method 3: Handle JSON Parse Error
+    async _handleJSONParseError(error, jsonStr, message, text) {
+        if (jsonStr.includes('"gastos"')) {
+            logger.error("JSON Syntax Error", { error: error.message, input: text });
+            await message.reply("❌ Erro técnico ao processar sua solicitação.");
+        } else {
+            await message.reply(text);
+        }
+    }
+
+    // Extracted Method 4: Parse and Validate JSON
+    async _parseAndValidateJSON(text, message, user, content, metadata) {
+        const jsonStr = _parseAIResponse(text);
+
+        try {
+            const parsedRaw = JSON.parse(jsonStr);
+            const validation = AIResponseSchema.safeParse(parsedRaw);
+
+            if (validation.success) {
+                await _processTransactionData(validation, user, message, content, metadata);
+                return;
+            }
+
+            await this._handleValidationFailure(validation, jsonStr, message, text);
+
+        } catch (e) {
+            await this._handleJSONParseError(e, jsonStr, message, text);
+        }
+    }
+
+    // Extracted Method 5: Update User Context
+    _updateUserContext(userContext, userContent, assistantContent) {
+        const updated = [...userContext];
+        updated.push({ role: "user", content: userContent });
+        updated.push({ role: "assistant", content: assistantContent });
+
+        return updated.length > 10 ? updated.slice(-10) : updated;
+    }
+
+    // Extracted Method 6: Handle AI Response
+    async _handleAIResponse(response, message, user, userContext, content) {
+        const text = typeof response.content === 'string'
+            ? response.content
+            : JSON.stringify(response.content);
+
+        await this._parseAndValidateJSON(text, message, user, content, response.metadata);
+
+        return this._updateUserContext(userContext, content, text);
+    }
+
+    // Main Handler (Refactored)
+    async handle(message, user, userContext) {
+        const content = message.body;
         const response = await textStrategy.execute(content, message, user, userContext);
 
-        // Step 2: Handle Response Types
+        // Early return for media response
         if (response.type === 'media_response') {
-            const { mimetype, data, filename, caption } = response.content;
-            const media = { mimetype, data, filename };
-            await message.reply(media, undefined, { caption });
+            await this._handleMediaResponse(response, message);
             return;
         }
 
+        // Handle AI/Tool responses
         if (response.type === 'ai_response' || response.type === 'tool_response') {
-            const text = typeof response.content === 'string' ? response.content : JSON.stringify(response.content);
-
-            // 1. Validation (Is it JSON?)
-            const jsonStr = _parseAIResponse(text);
-
-            try {
-                const parsedRaw = JSON.parse(jsonStr);
-                const validation = AIResponseSchema.safeParse(parsedRaw);
-
-                if (validation.success) {
-                    // Valid Data Process
-                    await _processTransactionData(validation, user, message, content, response.metadata);
-
-                } else {
-                    // Validation Failed
-                    const isTransactionAttempt = jsonStr.includes('"gastos"') || jsonStr.includes('"transacoes"');
-                    if (isTransactionAttempt) {
-                        logger.warn("Falha de Validação Zod", { errors: validation.error.format(), input: text });
-                        await message.reply("😵‍💫 Fiquei confuso com os dados. Poderia repetir de forma mais clara?");
-                    } else {
-                        await message.reply(text);
-                    }
-                }
-            } catch (e) {
-                // Not JSON, plain text response
-                if (jsonStr.includes('"gastos"')) {
-                    logger.error("JSON Syntax Error", { error: e.message, input: text });
-                    await message.reply("❌ Erro técnico ao processar sua solicitação.");
-                } else {
-                    await message.reply(text);
-                }
-            }
-
-            // Update context
-            userContext.push({ role: "user", content: content });
-            userContext.push({ role: "assistant", content: text });
-
-            if (userContext.length > 10) {
-                userContext = userContext.slice(-10);
-            }
-
-            await sessionService.setContext(user.id, userContext, 86400);
+            const updatedContext = await this._handleAIResponse(
+                response,
+                message,
+                user,
+                userContext,
+                content
+            );
+            await sessionService.setContext(user.id, updatedContext, 86400);
         }
     }
 }

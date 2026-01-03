@@ -22,19 +22,44 @@ async function _downloadMediaSafe(message, userId) {
     }
 }
 
+// Document type matchers (extracted for clarity)
+function _isPDF(mime, filename) {
+    return mime === 'application/pdf' || filename.endsWith('.pdf');
+}
+
+function _isOFX(mime, filename) {
+    return filename.endsWith('.ofx') || mime.includes('ofx');
+}
+
+function _isCSV(mime, filename) {
+    return filename.endsWith('.csv') || mime.includes('csv');
+}
+
+function _isExcel(mime, filename) {
+    return filename.endsWith('.xlsx') ||
+        filename.endsWith('.xls') ||
+        mime.includes('excel') ||
+        mime.includes('spreadsheet');
+}
+
+// Refactored: Reduced complexity from ~17 to ~5
 function _determineJobType(message, media) {
     const mime = media.mimetype;
     const filename = media.filename || message.body || 'unknown';
+    const messageType = message.type;
 
-    if (message.type === 'image') return 'PROCESS_IMAGE';
-    if (message.type === 'ptt' || message.type === 'audio') return 'PROCESS_AUDIO';
+    // Map simple types
+    if (messageType === 'image') return 'PROCESS_IMAGE';
+    if (messageType === 'ptt' || messageType === 'audio') return 'PROCESS_AUDIO';
 
-    if (message.type === 'document') {
-        if (mime === 'application/pdf' || filename.endsWith('.pdf')) return 'PROCESS_PDF';
-        if (filename.endsWith('.ofx') || mime.includes('ofx')) return 'PROCESS_OFX';
-        if (filename.endsWith('.csv') || mime.includes('csv')) return 'PROCESS_CSV';
-        if (filename.endsWith('.xlsx') || filename.endsWith('.xls') || mime.includes('excel') || mime.includes('spreadsheet')) return 'PROCESS_XLSX';
+    // Handle document types
+    if (messageType === 'document') {
+        if (_isPDF(mime, filename)) return 'PROCESS_PDF';
+        if (_isOFX(mime, filename)) return 'PROCESS_OFX';
+        if (_isCSV(mime, filename)) return 'PROCESS_CSV';
+        if (_isExcel(mime, filename)) return 'PROCESS_XLSX';
     }
+
     return null;
 }
 
@@ -87,5 +112,10 @@ module.exports = {
     // Exporting helpers for testing
     _isValidSize,
     _determineJobType,
-    _downloadMediaSafe
+    _downloadMediaSafe,
+    // Exporting matchers for testing
+    _isPDF,
+    _isOFX,
+    _isCSV,
+    _isExcel
 };
