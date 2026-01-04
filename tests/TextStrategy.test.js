@@ -13,7 +13,7 @@ const TransactionRepository = require('../src/repositories/TransactionRepository
 
 // Importar Strategy e Helpers
 const {
-    TextStrategy,
+    TextStrategy: strategy,
     _checkMaliciousInput,
     _buildRAGContext,
     _handleToolCall
@@ -23,6 +23,8 @@ describe('TextStrategy - Refactored Functions', () => {
     let mockSearchSimilar;
 
     beforeEach(() => {
+        console.log('Strategy Type:', typeof strategy);
+        console.log('Strategy Execute Type:', typeof strategy.execute);
         jest.clearAllMocks();
 
         // Mock searchSimilar do TransactionRepository
