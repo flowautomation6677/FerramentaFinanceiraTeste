@@ -163,9 +163,12 @@ async function _handleToolCall(toolCall, user) {
     let result = "";
 
     if (toolCall.function.name === 'manage_profile') {
-        result = args.action === 'set_goal'
-            ? (await userRepo.setFinancialGoal(user.id, args.value) ? "Meta Salva" : "Erro")
-            : `Meta: ${await userRepo.getFinancialGoal(user.id) || "N/D"}`;
+        if (args.action === 'set_goal') {
+            const success = await userRepo.setFinancialGoal(user.id, args.value);
+            result = success ? "Meta Salva" : "Erro";
+        } else {
+            result = `Meta: ${await userRepo.getFinancialGoal(user.id) || "N/D"}`;
+        }
     }
     else if (toolCall.function.name === 'get_spending_summary') {
         result = "Tool executing... (Logic moved to Service)";

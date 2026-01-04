@@ -15,9 +15,9 @@ O projeto **passou** no Quality Gate do SonarQube após aplicação de melhorias
 ```
 Bugs: 0 (mantém) ✅
 Vulnerabilities: 0 (mantém) ✅
-Security Hotspots: 2 (baixo risco, validados)
-Code Smells: 18 → 10 → 2 (-89% do inicial!) ✅✅✅
-Technical Debt: 2h 57min → 1h 34min → 11min (-94% do inicial!) ✅✅✅
+Security Hotspots: 0 (🔻 de 2)
+Code Smells: 18 → 10 → 1 (-94% do inicial!) ✅✅✅
+Technical Debt: 2h 57min → 1h 34min → < 10min (-95% do inicial!) ✅✅✅
 Maintainability Rating: B/C → A ✅
 Cognitive Complexity Reduzida:
   - TextStrategy: 38 → 8 (-79%)
@@ -172,12 +172,9 @@ Cobertura de Testes: 0% → ~20-25% (Fase 1 completa) ✅
 
 ### 🛡️ SECURITY HOTSPOTS (2)
 
-- [ ] **AudioStrategy.js** - child_process.spawn
-  - Revisar validação de PATH
-  - Documentar justificativa
-  - Marcar como "Safe" no SonarQube
-  - **Tempo:** 1-2h
-  - **Risco:** Baixo (uso necessário)
+- [x] **[SAFE]** `src/strategies/AudioStrategy.js`: `child_process.spawn`
+  - **Ação**: Adicionada validação estrita de caminho absoluto e existência do arquivo `ffmpeg`. Desabilitada execução de shell (`shell: false`). Adicionado comentário `// NOSONAR` com justificativa.
+  - **Validação**: Teste unitário de segurança `tests/security/AudioStrategySecurity.test.js` passa. SonarQube não reporta mais o hotspot.
 
 ---
 
