@@ -154,7 +154,8 @@ function _buildSystemPrompts(contextStr, today) {
     };
 }
 
-return Math.random() < 0.5 ? 'v1_stable' : 'v2_experimental'; // NOSONAR
+function _selectPromptVersion() {
+    return Math.random() < 0.5 ? 'v1_stable' : 'v2_experimental'; // NOSONAR
 }
 
 async function _handleReportGeneration(args, user) {
