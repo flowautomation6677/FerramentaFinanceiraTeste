@@ -154,8 +154,30 @@ function _buildSystemPrompts(contextStr, today) {
     };
 }
 
-function _selectPromptVersion() {
-    return Math.random() < 0.5 ? 'v1_stable' : 'v2_experimental'; // NOSONAR
+return Math.random() < 0.5 ? 'v1_stable' : 'v2_experimental'; // NOSONAR
+}
+
+async function _handleReportGeneration(args, user) {
+    try {
+        const reportService = require('../services/reportService');
+        const m = args.month ? args.month - 1 : undefined;
+        const y = args.year;
+        const pdfBuffer = await reportService.generateMonthlyReport(user.id, m, y);
+
+        // SPECIAL RETURN TYPE FOR MEDIA
+        return {
+            type: 'media_response',
+            content: {
+                mimetype: 'application/pdf',
+                data: pdfBuffer.toString('base64'),
+                filename: `Relatorio_${args.month || 'Atual'}_${args.year || 'Corrente'}.pdf`,
+                caption: "📊 Aqui está seu relatório financeiro!"
+            }
+        };
+    } catch (e) {
+        logger.error("Report Generation Error", { error: e });
+        return "Erro ao gerar relatório. Tente novamente.";
+    }
 }
 
 async function _handleToolCall(toolCall, user) {
@@ -174,26 +196,11 @@ async function _handleToolCall(toolCall, user) {
         result = "Tool executing... (Logic moved to Service)";
     }
     else if (toolCall.function.name === 'generate_report') {
-        try {
-            const reportService = require('../services/reportService');
-            const m = args.month ? args.month - 1 : undefined;
-            const y = args.year;
-            const pdfBuffer = await reportService.generateMonthlyReport(user.id, m, y);
-
-            // SPECIAL RETURN TYPE FOR MEDIA  
-            return {
-                type: 'media_response',
-                content: {
-                    mimetype: 'application/pdf',
-                    data: pdfBuffer.toString('base64'),
-                    filename: `Relatorio_${args.month || 'Atual'}_${args.year || 'Corrente'}.pdf`,
-                    caption: "📊 Aqui está seu relatório financeiro!"
-                }
-            };
-        } catch (e) {
-            logger.error("Report Generation Error", { error: e });
-            result = "Erro ao gerar relatório. Tente novamente.";
+        const reportResult = await _handleReportGeneration(args, user);
+        if (typeof reportResult === 'object' && reportResult.type === 'media_response') {
+            return reportResult;
         }
+        result = reportResult;
     }
 
     return {
@@ -295,5 +302,6 @@ module.exports = {
     _getToolsDefinition,
     _buildSystemPrompts,
     _selectPromptVersion,
-    _handleToolCall
+    _handleToolCall,
+    _handleReportGeneration
 };
