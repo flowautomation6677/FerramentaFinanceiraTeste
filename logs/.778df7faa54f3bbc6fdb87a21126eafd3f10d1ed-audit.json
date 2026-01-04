@@ -6,11 +6,6 @@
     "auditLog": "C:\\Users\\luiza\\OneDrive\\Documentos\\Antigravity\\FerramentaFinanceiraTeste\\logs\\.778df7faa54f3bbc6fdb87a21126eafd3f10d1ed-audit.json",
     "files": [
         {
-            "date": 1766336618233,
-            "name": "C:\\Users\\luiza\\OneDrive\\Documentos\\Antigravity\\FerramentaFinanceiraTeste\\logs\\error-2025-12-21.log",
-            "hash": "597eb10bc7c7359648e2be9391439c2577321d5230f7a9491094f8356487031e"
-        },
-        {
             "date": 1766418225563,
             "name": "C:\\Users\\luiza\\OneDrive\\Documentos\\Antigravity\\FerramentaFinanceiraTeste\\logs\\error-2025-12-22.log",
             "hash": "f0fc54c231eccc0cc9ca8338bd2c37196d3dad26810d1e66c43b8d9cea39d733"
@@ -39,6 +34,11 @@
             "date": 1767411362291,
             "name": "C:\\Users\\luiza\\OneDrive\\Documentos\\Antigravity\\FerramentaFinanceiraTeste\\logs\\error-2026-01-03.log",
             "hash": "b2aaaa4389bfd3471e4bdf90880ab15712f16b9a6fe9a3ad4c4d3476111f3c14"
+        },
+        {
+            "date": 1767548001588,
+            "name": "C:\\Users\\luiza\\OneDrive\\Documentos\\Antigravity\\FerramentaFinanceiraTeste\\logs\\error-2026-01-04.log",
+            "hash": "087fa7ababdcf44c41efacd2ed552e6df8f8342f924ee53e1e887b59a635f44f"
         }
     ],
     "hashType": "sha256"
